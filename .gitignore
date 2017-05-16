@@ -2,3 +2,7 @@
 \.idea/
 
 STOMACH/__pycache__/
+
+stomach_src/__pycache__/
+
+stomach_src/migrations/__pycache__/
