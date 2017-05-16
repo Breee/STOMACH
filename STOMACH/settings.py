@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'stomach_src.apps.RenameMeConfig',
+    'stomach_src.apps.stomach_srcConfig',
 ]
 
 MIDDLEWARE = [

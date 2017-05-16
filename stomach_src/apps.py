@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class RenameMeConfig(AppConfig):
+class stomach_srcConfig(AppConfig):
     name = 'stomach_src'
