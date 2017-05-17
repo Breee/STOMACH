@@ -8,3 +8,6 @@ stomach_src/__pycache__/
 stomach_src/migrations/__pycache__/
 
 *.sqlite3
+
+virtual_env/
+
