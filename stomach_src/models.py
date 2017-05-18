@@ -91,5 +91,5 @@ class User_Recipe(models.Model):
 class Creator_Recipe(models.Model):
     creator_ID = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     recipe_ID = models.ForeignKey(Recipe)
-
+    public = models.BooleanField(default=True)
 

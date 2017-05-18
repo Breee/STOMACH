@@ -7,8 +7,8 @@ from .models import Category_Recipe
 from .models import Tag
 from .models import Tag_Recipe
 from .models import Unit
-
-
+from .models import User_Recipe
+from .models import Creator_Recipe
 
 
 class IngredientInline(admin.TabularInline):
@@ -36,3 +36,5 @@ admin.site.register(Tag_Recipe)
 admin.site.register(Tag)
 admin.site.register(Category)
 admin.site.register(Unit)
+admin.site.register(User_Recipe)
+admin.site.register(Creator_Recipe)
