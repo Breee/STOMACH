@@ -1,41 +1,64 @@
 from django.db import models
 
-class Recipe(models.Model):
-    BF = "breakfast"
-    BR = "brunch"
-    LU = "lunch"
-    CATEGORY_CHOICES = (
-        (BF, "breakfast"),
-        (BR, "brunch"),
-        (LU, "lunch"))
 
+# class for units like gram,litre,cups,ounces
+class Unit(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
+
+# class for categories like breakfast, lunch, dinner...
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+# class for tags which shall be attached to recipes, e.g. flour, oven..
+class Tag(models.Model):
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
+# class for recipes
+class Recipe(models.Model):
+
+    # name of the recipe
     name = models.CharField(max_length=200)
+    # date on which the recipe is/shall be published.
     pub_date = models.DateTimeField('date published')
-    category = models.CharField(max_length=200,choices=CATEGORY_CHOICES, default=BF)
+    # description of the recipe (how to cook xxx..)
     description = models.CharField(max_length=1000)
+    # time to prepare/cook the recipe.
     cook_time = models.PositiveIntegerField(default=0)
+    # amount of persons.
     person_amount = models.PositiveIntegerField(default=1)
-    #tag_recipe_ID
 
     def __str__(self):
         return self.name + " (ID: %d)" % self.id
 
+
+# class for defines an ingredient
 class Ingredient(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
 
+# class that defines a mapping [ingedient] -> [recipe]
 class Ing_Recipe(models.Model):
-    G = "grams(g)"
-    KG = "kilograms(kg)"
-    L = "litre(l)"
-    UNIT_CHOICES = (
-        (G, "grams(g)"),
-        (KG, "kilograms(kg)"),
-        (L, "litre(l)"))
     recipe_ID = models.ForeignKey(Recipe)
     ing_ID = models.ForeignKey(Ingredient)
     value = models.PositiveIntegerField(default=1)
-    unit = models.CharField(max_length=50, choices=UNIT_CHOICES)
+    unit = models.ForeignKey(Unit)
+
+# class that defines a mapping [category] -> [recipe]
+class Category_Recipe(models.Model):
+    recipe_ID = models.ForeignKey(Recipe)
+    category_ID = models.ForeignKey(Category)
+
+# class that defines a mapping [tag] -> [recipe]
+class Tag_Recipe(models.Model):
+    recipe_ID = models.ForeignKey(Recipe)
+    tag_ID = models.ForeignKey(Tag)
 
