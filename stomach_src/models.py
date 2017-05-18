@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.db import models
+
 
 
 # class for units like gram,litre,cups,ounces
@@ -8,6 +10,7 @@ class Unit(models.Model):
     def __str__(self):
         return self.name
 
+
 # class for categories like breakfast, lunch, dinner...
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -15,12 +18,14 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 # class for tags which shall be attached to recipes, e.g. flour, oven..
 class Tag(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
+
 
 # class for recipes
 class Recipe(models.Model):
@@ -51,6 +56,7 @@ class Ingredient(models.Model):
     def __str__(self):
         return self.name
 
+
 # class that defines a mapping [ingredient] -> [recipe]
 class Ing_Recipe(models.Model):
     # recipe id
@@ -65,13 +71,25 @@ class Ing_Recipe(models.Model):
     # unit of the ingredient
     unit = models.ForeignKey(Unit)
 
+
 # class that defines a mapping [category] -> [recipe]
 class Category_Recipe(models.Model):
-    recipe_ID = models.ForeignKey(Recipe)
     category_ID = models.ForeignKey(Category)
+    recipe_ID = models.ForeignKey(Recipe)
+
 
 # class that defines a mapping [tag] -> [recipe]
 class Tag_Recipe(models.Model):
-    recipe_ID = models.ForeignKey(Recipe)
     tag_ID = models.ForeignKey(Tag)
+    recipe_ID = models.ForeignKey(Recipe)
+
+
+class User_Recipe(models.Model):
+    user_ID = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipe_ID = models.ForeignKey(Recipe)
+
+class Creator_Recipe(models.Model):
+    creator_ID = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    recipe_ID = models.ForeignKey(Recipe)
+
 
