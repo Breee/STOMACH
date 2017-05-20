@@ -10,6 +10,8 @@ class RecipeForm(forms.ModelForm):
                            widget=forms.Textarea(attrs={
                                'placeholder': 'how to prepare this recipe?'
                            }), required=False)
+    public =  forms.BooleanField(widget=forms.CheckboxInput,required=False)
+
     class Meta:
         model = Recipe
         fields = ('name', 'cook_time', 'person_amount')

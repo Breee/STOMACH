@@ -69,7 +69,6 @@ class Ingredient(models.Model):
 
 # class that defines a mapping [ingredient] -> [recipe]
 class Ing_Recipe(models.Model):
-
     # recipe id
     recipe_ID = models.ForeignKey(Recipe)
     # ingredient id
