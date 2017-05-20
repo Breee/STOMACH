@@ -48,8 +48,11 @@ def detail(request, recipe_id):
 
 def recipe_new(request):
     if request.method == "POST":
+
+        creator_ID = request.user.id
+        # convert post data from a querydict to a dict where values are lists.
         dataDict = dict(request.POST.lists())
-        print(dataDict)
+
         # post data
         name = dataDict["name"][0]
         description = dataDict["description"][0]
@@ -59,8 +62,7 @@ def recipe_new(request):
         ing_unit_IDs = dataDict["form-0-unit"]
         ing_amounts = dataDict["form-0-amount"]
         category_IDs = dataDict["form-0-category"]
-        # creator
-        creator_ID = request.user.id
+
         # create new recipe
         newRecipe = Recipe.objects.create(name=name, description=description, cook_time=cook_time,
                                           person_amount=person_amount)
@@ -77,14 +79,13 @@ def recipe_new(request):
         newCreatorRecipe.save()
 
         # create new ingredients + ing_recipe relations
+        # also add a tag for each ingredient's name.
         for i in range(0,len(ing_names)):
-            print(len(ing_names))
+            # ingredient name + unit + amount
+            # TODO: check for duplicates, should probably already happen on the frontend side.
             name = ing_names[i]
             unit = ing_unit_IDs[i]
             amount = ing_amounts[i]
-            print(name)
-            print(unit)
-            print(amount)
 
             # new ingredient
             if Ingredient.objects.all().filter(name=name).count() == 0:
@@ -105,7 +106,6 @@ def recipe_new(request):
             # new tag_recipe relation
             newTagRecipe = Tag_Recipe.objects.create(recipe_ID_id=newRecipe.id, tag_ID_id=newTag.id)
             newTagRecipe.save()
-
 
         # create category_Recipe relation
         for id in category_IDs:
