@@ -1,0 +1,36 @@
+{% extends 'html/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Recipes{% endblock title %}
+{% block nav-style %}mkt-nav{% endblock nav-style %}
+
+{% block content %}
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Recipes:</h2>
+        <div class="mkt-s2-body">
+            {% if latest_recipes_list %}
+                <ul>
+                    {% for recipe in latest_recipes_list %}
+                        <li><a href="{% url 'detail' recipe.id %}">{{ recipe.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No recipes are available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h"><a href="{% url 'recipe_new' %}" class="btn btn-info"><span
+                class="glyphicon glyphicon-plus"></span> Add recipe</a></h2>
+    </div>
+
+    {% if notAuthorized %}
+        <div class="mkt-s2 container">
+            <div class="alert alert-warning" role="alert">{{ notAuthorized }}  <a href="/login" class="btn btn-warning" role="button">Login now</a></div>
+
+        </div>
+    {% endif %}
+
+{% endblock %}

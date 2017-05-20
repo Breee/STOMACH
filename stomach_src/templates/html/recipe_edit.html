@@ -1,0 +1,40 @@
+{% extends 'html/base.html' %}
+
+{% load staticfiles %}
+{% block content %}
+
+    {% if success %}
+        <div class="alert alert-success" role="alert">{{ success }}</div>
+        <a href="/stomach/recipe/new" class="btn btn-info" role="button">Add another recipe</a>
+    {% else %}
+    <h1>New Recipe</h1>
+    <form method="POST" class="post-form">{% csrf_token %}
+
+        <div class="panel panel-default formsetContainer">
+        <div class="panel-heading"> General: </div>
+        <div class="panel-body">
+            {{ form.as_p }}
+        </div>
+        </div>
+
+        <div class="panel panel-default formsetContainer">
+        <div class="panel-heading"> Ingredients: </div>
+        <div class="panel-body">
+            {% for form in ingredientFormset %}
+                <div class="ingredient-formset formsetSubelement formset"> {{ form.as_p }} </div>
+            {% endfor %}
+        </div>
+        </div>
+
+        <div class="panel panel-default formsetContainer">
+            <div class="panel-heading"> Categories: </div>
+            <div class="panel-body">
+                {% for form in categoryFormset %}
+                    <div class="category-formset formsetSubelement formset"> {{ form.as_p }} </div>
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+    {% endif %}
+{% endblock %}

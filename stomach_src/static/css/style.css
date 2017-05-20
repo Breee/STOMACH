@@ -1,3 +1,20 @@
 li{
     color: green;
 }
+
+.formsetSubelement {
+    position: relative;
+    display: -webkit-box;
+    border-collapse: separate;
+}
+.formsetSubelement p {
+    padding-right: 0.2em;
+}
+.formsetContainer{
+    margin-top: 0.2em;
+    margin-bottom: 0.2em;
+}
+
+textarea#id_description {
+    vertical-align: top;
+}

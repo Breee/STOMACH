@@ -1,0 +1,20 @@
+{% extends 'html/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Login{% endblock title %}
+{% block nav-style %}mkt-nav{% endblock nav-style %}
+
+{% block content %}
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Login:</h2>
+        <div class="mkt-s2-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-info">Login</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

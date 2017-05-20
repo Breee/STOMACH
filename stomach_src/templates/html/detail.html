@@ -1,0 +1,86 @@
+{% extends 'html/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Recipes{% endblock title %}
+{% block nav-style %}mkt-nav{% endblock nav-style %}
+
+{% block content %}
+
+    {# Hero Section #}
+    <div class="mkt-s1">
+        <div class="mkt-s1-body container ">
+            <div class="row">
+                <h1 class="col-md-8">{{ recipe.name }}</h1>
+            </div>
+            <div class="row">
+                <p class="col-md-8">Description: {{ recipe.description }}</p>
+            </div>
+        </div>
+    </div>
+    {# Main Section #}
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Ingredients:</h2>
+        <div class="mkt-s2-body">
+            <ul>
+                {% for ingredient in ingredients %}
+                    <li>
+                        <b>
+                            {{ ingredient.amount }}
+                            {% if ingredient.unit.short != "-" %}
+                                {{ ingredient.unit }}
+                            {% endif %}
+                        </b>
+                        {{ ingredient.ing_ID.name }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Description:</h2>
+        <div class="mkt-s2-body">
+            {{ recipe.description }}
+        </div>
+    </div>
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Amount of persons:</h2>
+        <div class="mkt-s2-body">
+            {{ recipe.person_amount }}
+        </div>
+    </div>
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Cook time:</h2>
+        <div class="mkt-s2-body">
+            {{ recipe.cook_time }}
+        </div>
+    </div>
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Categories:</h2>
+        <div class="mkt-s2-body">
+            <ul>
+                {% for category in categories %}
+                    <li><b>{{ category.category_ID.name }}</b></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Tags:</h2>
+        <div class="mkt-s2-body">
+            <ul>
+                {% for tag in tags %}
+                    <li><b>{{ tag.tag_ID.name }}</b></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+
+
+{% endblock %}
+

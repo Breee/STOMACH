@@ -24,7 +24,7 @@ class TagInline(admin.TabularInline):
 class RecipeAdmin(admin.ModelAdmin):
     fieldsets = [
             (None,               {'fields': ['name', 'description', 'cook_time','person_amount']}),
-            ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
+            ('Date information', {'fields': ['published_date'], 'classes': ['collapse']}),
                 ]
     inlines = [IngredientInline,TagInline,CategoryInline]
 
