@@ -33,17 +33,17 @@ def recipes(request):
     # where the id is the name accessible in html templates.
     context = {'latest_recipes_list': recipes_list}
     # render will replace the python code in the template with whatever you defined.
-    return render(request, 'html/recipe_list.html', context)
+    return render(request, 'html/recipe/recipe_list.html', context)
 
 
-def detail(request, recipe_id):
+def recipe_detail(request, recipe_id):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
     context = {'recipe': recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories}
 
-    return render(request, 'html/detail.html', context)
+    return render(request, 'html/recipe/recipe_detail.html', context)
 
 
 def recipe_new(request):
@@ -115,7 +115,7 @@ def recipe_new(request):
         message = "Thanks, new recipe added"
         context = {'success': message}
         return render(request,
-                      'html/recipe_edit.html',
+                      'html/recipe/recipe_edit.html',
                       context)
     else:
         if request.user.is_authenticated:
@@ -124,10 +124,10 @@ def recipe_new(request):
             categoryFormSet = formset_factory(CategoryForm)
             context = {'form': recipeForm, 'ingredientFormset': ingredientFormSet, 'categoryFormset': categoryFormSet}
             return render(request,
-                          'html/recipe_edit.html',
+                          'html/recipe/recipe_edit.html',
                           context)
         else:
             recipes_list = Recipe.objects.order_by('-published_date')
             message = "Only logged in users can create new recipes."
             context = {'notAuthorized': message, 'latest_recipes_list': recipes_list}
-            return render(request, 'html/recipe_list.html', context)
+            return render(request, 'html/recipe/recipe_list.html', context)

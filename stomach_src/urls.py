@@ -5,7 +5,7 @@ urlpatterns = [
     url(r'^recipes$', views.recipes, name='recipes'),
     url(r'^$', views.home, name='home'),
     # ex: /stomach/5/
-    url(r'^(?P<recipe_id>[0-9]+)/$', views.detail, name='detail'),
+    url(r'^(?P<recipe_id>[0-9]+)/$', views.recipe_detail, name='recipe_detail'),
     url(r'^recipe/new/$',views.recipe_new, name='recipe_new'),
 
 ]
