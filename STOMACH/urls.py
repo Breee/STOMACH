@@ -5,5 +5,6 @@ urlpatterns = [
     url(r'^login/$', auth_views.login,{'template_name': 'html/registration/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout,{'next_page': '/stomach/home' }, name='logout'),
     url(r'^stomach/', include('stomach_src.urls'), name='home'), #this line added
+    url(r'^$', include('stomach_src.urls'), name='home'), #this line added
     url(r'^admin/', admin.site.urls),
 ]
