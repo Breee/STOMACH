@@ -79,8 +79,17 @@
             </ul>
         </div>
     </div>
-
-
+    {% if userIsCreator %}
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-1"><a href="{% url 'recipe_edit' recipe.id %}" class="btn btn-info"><span
+                        class="glyphicon glyphicon-edit"></span> Edit</a></div>
+                <div class="col-lg-1"><a href="{% url 'recipe_delete' recipe.id %}" class="btn btn-info"><span
+                        class="glyphicon glyphicon-trash"></span> Delete</a></div>
+                <div class="col-lg-10"></div>
+            </div>
+        </div>
+    {% endif %}
 
 {% endblock %}
 

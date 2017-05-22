@@ -1,7 +1,9 @@
 {% load staticfiles %}
+
 {# HTML5 declaration #}
 <!DOCTYPE html>
 <html>
+
 {# Make modifiable head elements #}
 <head>
     <title>{% block title %}Home {% endblock title %} | STOMACH</title>
@@ -40,6 +42,7 @@
 
 </head>
 <body>
+
 {# Navigation Menu #}
 <header>
 
@@ -61,17 +64,20 @@
             </div>
 
             <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="/stomach/home">Home</a></li>
-                <li><a href="/stomach/recipes">Recipes</a></li>
-                <li><a href="#">Stock</a></li>
-            </ul>
+                <ul class="nav navbar-nav">
+                    <li><a href="/stomach/home">Home</a></li>
+                    <li><a href="/stomach/recipes">Recipes</a></li>
+                </ul>
 
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
+                        <li><a href="{% url 'user_recipes' %}"
+                               class="p-r-none"><span class="glyphicon glyphicon-cutlery"></span> My Recipes</a></li>
+                        <li><a href=""
+                               class="p-r-none"><span class="glyphicon glyphicon-hdd"></span> My Stock</a></li>
                         <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                         <li><a href=""
-                               class="p-r-none">Account</a></li>
+                               class="p-r-none"><span class="glyphicon glyphicon-user"></span> Account</a></li>
                     {% else %}
                         <li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
                         <li><a href="" class="p-r-none"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
@@ -83,12 +89,14 @@
 
     </div>
 </header>
+
 {# The Document Body #}
 <div id="site-wrapper">
     {% block content %}
         if you see this, something is wrong!
     {% endblock content %}
 </div>
+
 {# The Footer #}
 <div class="footer">
     <div class="container">
@@ -96,15 +104,16 @@
     </div>
 </div>
 </body>
-    {# Set of blocks that can be used to display JavaScript files #}
-    {% block footer_javascript %}
-        {% block footer_javascript_site %}
-            <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
-            <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
-            <script src="{% static 'js/django-dynamic/src/jquery.formset.js' %}"></script>
-            <script src="{% static 'js/recipe_edit.js' %}"></script>
-        {% endblock footer_javascript_site %}
-        {% block footer_javascript_section %}{% endblock footer_javascript_section %}
-        {% block footer_javascript_page %}{% endblock footer_javascript_page %}
-    {% endblock footer_javascript %}
+
+{# Set of blocks that can be used to display JavaScript files #}
+{% block footer_javascript %}
+    {% block footer_javascript_site %}
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/django-dynamic/src/jquery.formset.js' %}"></script>
+        <script src="{% static 'js/recipe_edit.js' %}"></script>
+    {% endblock footer_javascript_site %}
+    {% block footer_javascript_section %}{% endblock footer_javascript_section %}
+    {% block footer_javascript_page %}{% endblock footer_javascript_page %}
+{% endblock footer_javascript %}
 </html>

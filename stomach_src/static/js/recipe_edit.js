@@ -1,14 +1,16 @@
 /**
  * Created by Bree on 20.05.2017.
  */
+$(function () {
  $('.ingredient-formset').formset({
-        addText: 'add ingredient',
-        deleteText: 'remove',
-        prefix : 'ingredients'
+        addText: '<button class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Add ingredient</button>',
+        deleteText: '<span class="btn btn-info btn-xs"><span class="glyphicon glyphicon-trash"></span> Remove</span>',
+        prefix: 'ingredients'
     });
 
   $('.category-formset').formset({
-        addText: 'add category',
-        deleteText: 'remove',
-        prefix : 'categories'
+        addText: '<button class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Add category</button>',
+        deleteText: '<span class="btn btn-info btn-xs"><span class="glyphicon glyphicon-trash"></span> Remove</span>',
+        prefix: 'categories'
     });
+});

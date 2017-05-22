@@ -4,12 +4,14 @@ li{
 
 .formsetSubelement {
     position: relative;
-    display: -webkit-box;
+    display: flex;
     border-collapse: separate;
 }
 .formsetSubelement p {
-    padding-right: 0.2em;
+    padding-right: 1em;
+
 }
+
 .formsetContainer{
     margin-top: 0.2em;
     margin-bottom: 0.2em;
@@ -17,4 +19,11 @@ li{
 
 textarea#id_description {
     vertical-align: top;
+}
+
+.formsetContainer .panel-body table tbody tr th{
+    text-align: left;
+    padding-right: 2em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }

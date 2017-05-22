@@ -1,8 +1,6 @@
 from django import forms
 
-from .models import Recipe
-from .models import Unit
-from  .models import Category
+from .models import *
 
 
 class RecipeForm(forms.ModelForm):
