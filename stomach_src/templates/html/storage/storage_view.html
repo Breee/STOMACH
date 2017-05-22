@@ -1,0 +1,25 @@
+{% extends 'html/base.html' %}
+
+{% load staticfiles %}
+{% block content %}
+
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Storage:</h2>
+        <div class="mkt-s2-body">
+            {% if storage_list %}
+                <ul>
+                    {% for storage in storage_list %}
+                        <li><a href="{% url 'storage_detail' storage.id %}">{{ storage.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-warning" role="alert"> You currently have no Storage, create one!</div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h"><a href="{% url 'storage_new' %}" class="btn btn-info"><span
+                class="glyphicon glyphicon-plus"></span> Create Storage</a></h2>
+    </div>
+
+{% endblock %}

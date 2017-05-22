@@ -1,0 +1,49 @@
+{% extends 'html/base.html' %}
+{% load staticfiles %}
+
+{% block title %}Storage{% endblock title %}
+{% block nav-style %}mkt-nav{% endblock nav-style %}
+
+{% block content %}
+
+    {# Hero Section #}
+    <div class="mkt-s1">
+        <div class="mkt-s1-body container ">
+            <div class="row">
+                <h1 class="col-md-8">{{ storage.name }}</h1>
+            </div>
+        </div>
+    </div>
+
+    {# Main Section #}
+    <div class="mkt-s2 container">
+        <h2 class="mkt-s2-h">Ingredients:</h2>
+        <div class="mkt-s2-body">
+            <ul>
+                {% for ingredient in ingredients %}
+                    <li>
+                        <b>
+                            {{ ingredient.amount }}
+                            {% if ingredient.unit.short != "-" %}
+                                {{ ingredient.unit }}
+                            {% endif %}
+                        </b>
+                        {{ ingredient.ing_ID.name }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-1"><a href="{% url 'storage_edit' storage.id %}" class="btn btn-info"><span
+                    class="glyphicon glyphicon-edit"></span> Edit</a></div>
+            <div class="col-lg-1"><a href="{% url 'storage_delete' storage.id %}" class="btn btn-info"><span
+                    class="glyphicon glyphicon-trash"></span> Delete</a></div>
+            <div class="col-lg-10"></div>
+        </div>
+    </div>
+
+{% endblock %}
+
