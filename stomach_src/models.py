@@ -11,16 +11,18 @@ from django.utils import timezone
 
 # class for units like gram,litre,cups,ounces
 class Unit(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, default="gram")
     short = models.CharField(max_length=10, default="g")
+    language = models.CharField(max_length=50,default="EN_US")
 
     def __str__(self):
-        return self.name + "(%s)"%self.short
+        return self.name + "(%s)" % self.short
 
 
 # class for categories like breakfast, lunch, dinner...
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    language = models.CharField(max_length=50,default="EN_US")
 
     def __str__(self):
         return self.name
