@@ -20,7 +20,6 @@ def home(request):
 #########################################################
 """
 
-
 def recipes_list(request, message=""):
     recipes_list = Recipe.objects.order_by('-published_date')
     # context is a map with elements of the form (id -> iterable)
@@ -33,7 +32,10 @@ def recipes_list(request, message=""):
 
 
 def recipe_detail(request, recipe_id):
-    context = DBUtils.getRecipeDetails(recipe_id, request.user.id)
+    context = DBUtils.get_recipe_details(recipe_id, request.user.id)
+    if context is None:
+        return not_authorized()
+
     return render(request,
                   'html/recipe/recipe_detail.html',
                   context)
@@ -50,7 +52,7 @@ def recipe_user(request):
 
 def recipe_new(request):
     if request.method == "POST":
-        DBUtils.createNewRecipe(request)
+        DBUtils.create_new_recipe(request)
         message = "Thanks, new recipe added"
         context = {'success': message}
         return render(request,
@@ -76,7 +78,11 @@ def recipe_new(request):
 
 
 def recipe_edit(request, recipe_id):
-    recipecontext = DBUtils.getRecipeDetails(recipe_id, request.user.id)
+    recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id)
+    if recipecontext == None or recipecontext['userIsCreator'] == False:
+        return not_authorized()
+
+
     recipe = recipecontext['recipe']
     ingredients = recipecontext['ingredients']
     categories = recipecontext['categories']
@@ -84,7 +90,7 @@ def recipe_edit(request, recipe_id):
 
     if request.method == "POST":
         Recipe.objects.filter(id=recipe_id).delete()
-        DBUtils.createNewRecipe(request)
+        DBUtils.create_new_recipe(request)
         message = "Thanks, your recipe was edited"
         context = {'success': message}
 
@@ -191,3 +197,11 @@ def storage_delete(request, storage_id):
 
 def redirect_storage_list(request):
     return redirect('storage_list')
+
+
+"""
+UTILS
+"""
+
+def not_authorized():
+    return HttpResponse("You are not authorized to do that.")

@@ -3,7 +3,7 @@ from stomach_src.models import *
 import re
 
 
-def getRecipeDetails(recipe_id, user_ID):
+def get_recipe_details(recipe_id, user_ID):
     recipe = get_object_or_404(Recipe, pk=recipe_id)
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
@@ -20,11 +20,14 @@ def getRecipeDetails(recipe_id, user_ID):
     except:
         raise ValueError("recipe with id: " + recipe_id + " does not exist.")
 
-    context = {'recipe': recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
+    if (isCreator) or (not isCreator and isPublic):
+        context = {'recipe': recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
                'userIsCreator': isCreator, 'isPublic': isPublic}
+    else:
+        context =  None
     return context
 
-def createNewRecipe(request):
+def create_new_recipe(request):
     creator_ID = request.user.id
 
     # convert post data from a querydict to a dict where values are lists.
