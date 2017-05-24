@@ -1,15 +1,5 @@
 from django.contrib import admin
-from .models import Recipe
-from .models import Ingredient
-from .models import Ing_Recipe
-from .models import Category
-from .models import Category_Recipe
-from .models import Tag
-from .models import Tag_Recipe
-from .models import Unit
-from .models import User_Recipe
-from .models import Creator_Recipe
-
+from .models import *
 
 class IngredientInline(admin.TabularInline):
     model = Ing_Recipe
@@ -23,7 +13,7 @@ class TagInline(admin.TabularInline):
 
 class RecipeAdmin(admin.ModelAdmin):
     fieldsets = [
-            (None,               {'fields': ['name', 'description', 'cook_time','person_amount']}),
+            (None,               {'fields': ['name', 'description', 'cook_time','person_amount','visible']}),
             ('Date information', {'fields': ['published_date'], 'classes': ['collapse']}),
                 ]
     inlines = [IngredientInline,TagInline,CategoryInline]

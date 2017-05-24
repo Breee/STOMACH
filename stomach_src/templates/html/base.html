@@ -65,14 +65,13 @@
 
             <div class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="/stomach/home">Home</a></li>
-                    <li><a href="/stomach/recipes">Recipes</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'recipes_list' %}">Recipes</a></li>
                 </ul>
 
                 <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'user_recipes' %}"
-                               class="p-r-none"><span class="glyphicon glyphicon-cutlery"></span> My Recipes</a></li>
+                        <li><a href="{% url 'recipes_user' %}" class="p-r-none"><span class="glyphicon glyphicon-cutlery"></span> My Recipes</a></li>
                         <li><a href="{% url 'user_storage' %}"
                                class="p-r-none"><span class="glyphicon glyphicon-hdd"></span> My Storage</a></li>
                         <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>

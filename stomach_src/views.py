@@ -1,4 +1,5 @@
 from django.shortcuts import *
+from django.contrib.auth.decorators import login_required
 
 from django.forms import formset_factory
 
@@ -21,7 +22,7 @@ def home(request):
 """
 
 def recipes_list(request, message=""):
-    recipes_list = Recipe.objects.order_by('-published_date')
+    recipes_list = Recipe.objects.order_by('-published_date').filter(visible=True)
     # context is a map with elements of the form (id -> iterable)
     # where the id is the name accessible in html templates.
     context = {'latest_recipes_list': recipes_list, "message": message}
@@ -40,13 +41,16 @@ def recipe_detail(request, recipe_id):
                   'html/recipe/recipe_detail.html',
                   context)
 
-
-def recipe_user(request):
-    userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID', flat=True)
-    recipes = Recipe.objects.filter(pk__in=set(userRecipes))
-    context = {'latest_recipes_list': recipes}
+@login_required
+def recipes_user(request):
+    userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
+    print("USER")
+    print(userRecipes)
+    recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
+    print(recipes)
+    context = {'recipes': recipes}
     return render(request,
-                  'html/recipe/recipe_list.html',
+                  'html/recipe/recipes_user.html',
                   context)
 
 
@@ -61,15 +65,15 @@ def recipe_new(request):
     else:
         if request.user.is_authenticated:
             recipeForm = RecipeForm()
-            ingredientFormSet = formset_factory(IngredientForm)
-            categoryFormSet = formset_factory(CategoryForm)
+            ingredientFormSet = formset_factory(IngredientForm,extra=1)
+            categoryFormSet = formset_factory(CategoryForm,extra=1)
             context = {'form': recipeForm, 'ingredientFormset': ingredientFormSet, 'categoryFormset': categoryFormSet,
                        'edit': False}
             return render(request,
                           'html/recipe/recipe_edit.html',
                           context)
         else:
-            recipes_list = Recipe.objects.order_by('-published_date')
+            recipes_list = Recipe.objects.order_by('-published_date').filter(visible=True)
             message = "Only logged in users can create new recipes."
             context = {'notAuthorized': message, 'latest_recipes_list': recipes_list}
             return render(request,
@@ -116,18 +120,15 @@ def recipe_edit(request, recipe_id):
                       context)
 
 
-def recipe_delete(request, recipe_id):
-    try:
-        recipename = Recipe.objects.get(id=recipe_id).name
-        Recipe.objects.get(id=recipe_id).delete()
-        message = "Recipe %s has been deleted successfully" % recipename
-    except:
-        message = ""
+
+
+def recipe_hide(request, recipe_id):
+    DBUtils.hide_recipe(recipe_id)
     return redirect_to_recipes_list(request)
 
 
 def redirect_to_recipes_list(request):
-    return redirect('recipes')
+    return redirect('recipes_list')
 
 
 """

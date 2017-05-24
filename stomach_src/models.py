@@ -52,6 +52,8 @@ class Recipe(models.Model):
     cook_time = models.PositiveIntegerField(default=0)
     # amount of persons.
     person_amount = models.PositiveIntegerField(default=1)
+    # visibility
+    visible = models.BooleanField(default=True)
 
     def publish(self):
         self.published_date = timezone.now()

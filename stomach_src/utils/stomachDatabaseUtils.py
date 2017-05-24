@@ -4,7 +4,7 @@ import re
 
 
 def get_recipe_details(recipe_id, user_ID):
-    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    recipe = get_object_or_404(Recipe, pk=recipe_id, visible=True)
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
@@ -71,7 +71,10 @@ def create_new_recipe(request):
         if Ingredient.objects.all().filter(name=name).count() == 0:
             newIngredient = Ingredient.objects.create(name=name)
         else:
-            newIngredient = Ingredient.objects.all().get(name=name)
+            try:
+                newIngredient = Ingredient.objects.all().get(name=name)
+            except:
+                print("no ingredient with that name exists.")
 
         # new ing_recipe relation
         Ing_Recipe.objects.create(unit=Unit.objects.get(id=unit), amount=amount, recipe_ID_id=newRecipe.id,
@@ -85,9 +88,21 @@ def create_new_recipe(request):
 
     # create category_Recipe relation
     for id in category_IDs:
-        Category_Recipe.objects.create(recipe_ID_id=newRecipe.id, category_ID_id=id)
+        try:
+           Category_Recipe.objects.create(recipe_ID_id=newRecipe.id, category_ID_id=id)
+        except:
+            print("No categories set")
 
     return newRecipe.id
+
+def hide_recipe(recipe_id):
+    try:
+        recipe = Recipe.objects.get(id=recipe_id)
+        recipe.visible = False
+        recipe.save()
+    except:
+        raise ValueError("recipe with id %d does not exist" % recipe_id)
+
 
 def create_new_storage(request):
     creator_ID = request.user.id
@@ -122,3 +137,4 @@ def create_new_storage(request):
         Storage_Ingredient.objects.create(unit=Unit.objects.get(id=unit), amount=amount, ing_ID_id=newIngredient.id, storage_ID_id=newStorage.id)
 
     return newStorage.id
+
