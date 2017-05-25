@@ -53,7 +53,6 @@ def recipes_user(request):
                   'html/recipe/recipes_user.html',
                   context)
 
-
 def recipe_new(request):
     if request.method == "POST":
         DBUtils.create_new_recipe(request)
@@ -206,3 +205,16 @@ UTILS
 
 def not_authorized():
     return HttpResponse("You are not authorized to do that.")
+
+
+"""
+###############################################################
+################### INITIALIZATION VIEWS ######################
+###############################################################
+"""
+
+def initialize_Units(request):
+    DBUtils.create_units_from_csv()
+
+def initialize_Categories(request):
+    DBUtils.create_categories_from_csv()

@@ -1,6 +1,6 @@
+from stomach_src.initial_data.InitialValueManager import InitialValueManager
 from django.shortcuts import *
 from stomach_src.models import *
-import re
 
 
 def get_recipe_details(recipe_id, user_ID):
@@ -18,7 +18,7 @@ def get_recipe_details(recipe_id, user_ID):
     try:
         isPublic = Creator_Recipe.objects.get(recipe_ID=recipe_id).public
     except:
-        raise ValueError("recipe with id: " + recipe_id + " does not exist.")
+        raise KeyError("recipe with id: " + recipe_id + " does not exist.")
 
     if (isCreator) or (not isCreator and isPublic):
         context = {'recipe': recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
@@ -71,10 +71,8 @@ def create_new_recipe(request):
         if Ingredient.objects.all().filter(name=name).count() == 0:
             newIngredient = Ingredient.objects.create(name=name)
         else:
-            try:
-                newIngredient = Ingredient.objects.all().get(name=name)
-            except:
-                print("no ingredient with that name exists.")
+            newIngredient = Ingredient.objects.all().get(name=name)
+
 
         # new ing_recipe relation
         Ing_Recipe.objects.create(unit=Unit.objects.get(id=unit), amount=amount, recipe_ID_id=newRecipe.id,
@@ -94,6 +92,9 @@ def create_new_recipe(request):
             print("No categories set")
 
     return newRecipe.id
+
+def createUnit(name,short,language):
+    Unit.objects.create(name=name,short=short,language=language)
 
 def hide_recipe(recipe_id):
     try:
@@ -138,3 +139,19 @@ def create_new_storage(request):
 
     return newStorage.id
 
+
+
+"""
+INIT STUFF
+"""
+
+def create_units_from_csv():
+    im = InitialValueManager()
+    im.read_unit_csv('stomach_src/initial_data/units_GER.csv', 'GER')
+    for unit in im.get_unit_dict().values():
+        createUnit(unit.get_name(), unit.get_short(), unit.get_language())
+
+def create_categories_from_csv():
+    im = InitialValueManager()
+    im.read_category_csv('stomach_src/initial_data/categories.csv')
+    print(im.get_category_dict())
