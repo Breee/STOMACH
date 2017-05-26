@@ -93,8 +93,6 @@ def create_new_recipe(request):
 
     return newRecipe.id
 
-def createUnit(name,short,language):
-    Unit.objects.create(name=name,short=short,language=language)
 
 def hide_recipe(recipe_id):
     try:
@@ -103,6 +101,21 @@ def hide_recipe(recipe_id):
         recipe.save()
     except:
         raise ValueError("recipe with id %d does not exist" % recipe_id)
+
+
+def create_unit(name, short, language):
+    Unit.objects.create(name=name,short=short,language=language)
+
+def delete_all_units():
+    Unit.objects.all().delete()
+
+
+def create_category(name,language):
+    Category.objects.create(name=name,language=language)
+
+def delete_all_categories():
+    Category.objects.all().delete()
+
 
 
 def create_new_storage(request):
@@ -146,12 +159,15 @@ INIT STUFF
 """
 
 def create_units_from_csv():
+    delete_all_units()
     im = InitialValueManager()
     im.read_unit_csv('stomach_src/initial_data/units_GER.csv', 'GER')
     for unit in im.get_unit_dict().values():
-        createUnit(unit.get_name(), unit.get_short(), unit.get_language())
+        create_unit(unit.get_name(), unit.get_short(), unit.get_language())
 
 def create_categories_from_csv():
+    delete_all_categories()
     im = InitialValueManager()
     im.read_category_csv('stomach_src/initial_data/categories.csv')
-    print(im.get_category_dict())
+    for category in im.get_category_dict().values():
+        create_category(category.get_name(), category.get_language())
