@@ -39,6 +39,11 @@ def get_recipe_details(recipe_id, user_ID):
         context = None
     return context
 
+def get_user_recipes(request):
+    userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
+    recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
+    return recipes
+
 
 def create_new_recipe(request):
     creator_ID = request.user.id

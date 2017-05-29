@@ -21,11 +21,19 @@ def home(request):
 #########################################################
 """
 
+
 def recipes_list(request, message=""):
-    recipes_list = Recipe.objects.order_by('-published_date').filter(visible=True)
+    # get all public recipes
+    public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
+    # get all user recipes
+    user_recipes = DBUtils.get_user_recipes(request).values_list('id')
+    # union public and user recipes
+    public_user = public_recipes.union(user_recipes)
+    recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date').filter(
+        visible=True)
     # context is a map with elements of the form (id -> iterable)
     # where the id is the name accessible in html templates.
-    context = {'latest_recipes_list': recipes_list, "message": message}
+    context = {'latest_recipes_list': recipe_list, "message": message}
     # render will replace the python code in the template with whatever you defined.
     return render(request,
                   'html/recipe/recipe_list.html',
@@ -41,17 +49,15 @@ def recipe_detail(request, recipe_id):
                   'html/recipe/recipe_detail.html',
                   context)
 
+
 @login_required
 def recipes_user(request):
-    userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
-    print("USER")
-    print(userRecipes)
-    recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
-    print(recipes)
+    recipes = DBUtils.get_user_recipes(request)
     context = {'recipes': recipes}
     return render(request,
                   'html/recipe/recipes_user.html',
                   context)
+
 
 def recipe_new(request):
     if request.method == "POST":
@@ -64,10 +70,12 @@ def recipe_new(request):
     else:
         if request.user.is_authenticated:
             recipeForm = RecipeForm()
-            ingredientFormSet = formset_factory(IngredientForm,extra=1)
-            categoryFormSet = formset_factory(CategoryForm,extra=1)
-            context = {'form': recipeForm, 'ingredientFormset': ingredientFormSet, 'categoryFormset': categoryFormSet,
-                       'edit': False}
+            ingredientFormSet = formset_factory(IngredientForm, extra=1)
+            categoryFormSet = formset_factory(CategoryForm, extra=1)
+            context = {
+                'form': recipeForm, 'ingredientFormset': ingredientFormSet, 'categoryFormset': categoryFormSet,
+                'edit': False
+            }
             return render(request,
                           'html/recipe/recipe_edit.html',
                           context)
@@ -84,7 +92,6 @@ def recipe_edit(request, recipe_id):
     recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id)
     if recipecontext == None or recipecontext['userIsCreator'] == False:
         return not_authorized()
-
 
     recipe = recipecontext['recipe']
     ingredients = recipecontext['ingredients']
@@ -105,19 +112,22 @@ def recipe_edit(request, recipe_id):
         categoryFormSet = formset_factory(CategoryForm, extra=0)
 
         filledRecipe = RecipeForm(
-            initial={'name': recipe.name, 'description': recipe.description, 'cook_time': recipe.cook_time,
-                     'person_amount': recipe.person_amount, 'public': public})
+                initial={
+                    'name':          recipe.name, 'description': recipe.description, 'cook_time': recipe.cook_time,
+                    'person_amount': recipe.person_amount, 'public': public
+                })
         filledIng = ingredientFormSet(
-            initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients])
+                initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients])
         filledCategories = categoryFormSet(initial=[{'category': x.category_ID} for x in categories])
 
-        context = {'form': filledRecipe, 'ingredientFormset': filledIng, 'categoryFormset': filledCategories,
-                   'edit': True}
+        context = {
+            'form': filledRecipe, 'ingredientFormset': filledIng, 'categoryFormset': filledCategories,
+            'edit': True
+        }
 
         return render(request,
                       'html/recipe/recipe_edit.html',
                       context)
-
 
 
 def recipe_hide(request, recipe_id):
@@ -148,8 +158,10 @@ def storage_new(request):
         if request.user.is_authenticated:
             storageForm = StorageForm()
             ingredientFormSet = formset_factory(IngredientForm)
-            context = {'form': storageForm, 'ingredientFormset': ingredientFormSet,
-                       'edit': False}
+            context = {
+                'form': storageForm, 'ingredientFormset': ingredientFormSet,
+                'edit': False
+            }
             return render(request,
                           'html/storage/storage_new.html',
                           context)
@@ -202,6 +214,7 @@ def redirect_storage_list(request):
 UTILS
 """
 
+
 def not_authorized():
     return HttpResponse("You are not authorized to do that.")
 
@@ -212,9 +225,10 @@ def not_authorized():
 ###############################################################
 """
 
+
 def initialize_Units(request):
     DBUtils.create_units_from_csv()
 
+
 def initialize_Categories(request):
     DBUtils.create_categories_from_csv()
-
