@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'stomach_src.apps.stomach_srcConfig',
     'recipe.apps.RecipeConfig',
     'storage.apps.StorageConfig',
 ]
@@ -127,5 +126,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'recipes_list'
 LOGIN_URL = '/login'
