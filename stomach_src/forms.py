@@ -20,10 +20,10 @@ class IngredientForm(forms.Form):
                                'placeholder': 'ingredient name'
                            }), required=False)
     amount = forms.IntegerField(min_value=0,required=False)
-    unit = forms.ModelChoiceField(queryset=Unit.objects.all())
+    unit = forms.ModelChoiceField(queryset=Unit.objects.all(),empty_label=None)
 
 class CategoryForm(forms.Form):
-    category = forms.ModelChoiceField(queryset=Category.objects.all())
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label=None)
 
 class StorageForm(forms.ModelForm):
 

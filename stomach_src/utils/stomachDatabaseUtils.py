@@ -9,7 +9,7 @@ def get_recipe_versions(recipe_ID, user_ID):
     print(relatedRecipes)
     id_recipe = dict()
     for recipe in relatedRecipes:
-         id_recipe[recipe[0]] = (get_recipe_details(recipe[0],user_ID))
+        id_recipe[recipe[0]] = (get_recipe_details(recipe[0], user_ID))
     return id_recipe
 
 
@@ -31,67 +31,45 @@ def get_recipe_details(recipe_id, user_ID):
         raise KeyError("recipe with id: " + recipe_id + " does not exist.")
 
     if (isCreator) or (not isCreator and isPublic):
-        context = {'recipe': recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
-               'userIsCreator': isCreator, 'isPublic': isPublic}
+        context = {
+            'recipe':        recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
+            'userIsCreator': isCreator, 'isPublic': isPublic
+            }
     else:
-        context =  None
+        context = None
     return context
 
 
 def create_new_recipe(request):
-
     creator_ID = request.user.id
 
-    # convert post data from a querydict to a dict where values are lists.
-    dataDict = dict(request.POST.lists())
-    print(dataDict)
-
-    PostProcessor.clean(request)
-
-
-    # post data
-    name = dataDict["name"][0]
-    description = dataDict["description"][0]
-    cook_time = dataDict["cook_time"][0]
-    person_amount = dataDict["person_amount"][0]
-    ing_names = dataDict["form-0-name"]
-    ing_unit_IDs = dataDict["form-0-unit"]
-    ing_amounts = dataDict["form-0-amount"]
-    category_IDs = dataDict["form-0-category"]
+    # process post request data
+    cleanedData = PostProcessor.clean_recipe_post_data(request)
 
     # create new recipe
-    newRecipe = Recipe.objects.create(name=name, description=description, cook_time=cook_time,
-                                      person_amount=person_amount)
+    newRecipe = Recipe.objects.create(name=cleanedData['name'], description=cleanedData['description'],
+                                      cook_time=cleanedData['cook_time'],
+                                      person_amount=cleanedData['person_amount'])
     newRecipe.publish()
 
     # create Creator_Recipe relation
-    newCreatorRecipe = Creator_Recipe.objects.create(recipe_ID_id=newRecipe.id, creator_ID_id=creator_ID)
-    if "public" in dataDict:
-        public = dataDict["public"][0]
-        if public == "on":
-            newCreatorRecipe.public = True
-    else:
-        newCreatorRecipe.public = False
-    newCreatorRecipe.save()
-
+    Creator_Recipe.objects.create(recipe_ID_id=newRecipe.id, creator_ID_id=creator_ID, public=cleanedData['public'])
     # related recipe
-    Recipe_Versions.objects.create(parent_ID_id=newRecipe.id,recipe_ID_id=newRecipe.id,version=1)
+    Recipe_Versions.objects.create(parent_ID_id=newRecipe.id, recipe_ID_id=newRecipe.id, version=1)
 
     # create new ingredients + ing_recipe relations
     # also add a tag for each ingredient's name.
-    for i in range(0, len(ing_names)):
+    for id,value in cleanedData['ingredients'].items():
         # ingredient name + unit + amount
-        # TODO: check for duplicates, should probably already happen on the frontend side.
-        name = ing_names[i]
-        unit = ing_unit_IDs[i]
-        amount = ing_amounts[i]
+        name = value['name']
+        unit = value['unit']
+        amount = value['amount']
 
         # new ingredient
         if Ingredient.objects.all().filter(name=name).count() == 0:
             newIngredient = Ingredient.objects.create(name=name)
         else:
             newIngredient = Ingredient.objects.all().get(name=name)
-
 
         # new ing_recipe relation
         Ing_Recipe.objects.create(unit=Unit.objects.get(id=unit), amount=amount, recipe_ID_id=newRecipe.id,
@@ -104,15 +82,13 @@ def create_new_recipe(request):
         Tag_Recipe.objects.create(recipe_ID_id=newRecipe.id, tag_ID_id=newTag.id)
 
     # create category_Recipe relation
-    for id in category_IDs:
+    for id in cleanedData['categories']:
         try:
-           Category_Recipe.objects.create(recipe_ID_id=newRecipe.id, category_ID_id=id)
+            Category_Recipe.objects.create(recipe_ID_id=newRecipe.id, category_ID_id=id)
         except:
             print("No categories set")
 
     return newRecipe.id
-
-
 
 
 def hide_recipe(recipe_id):
@@ -125,18 +101,19 @@ def hide_recipe(recipe_id):
 
 
 def create_unit(name, short, language):
-    Unit.objects.create(name=name,short=short,language=language)
+    Unit.objects.create(name=name, short=short, language=language)
+
 
 def delete_all_units():
     Unit.objects.all().delete()
 
 
-def create_category(name,language):
-    Category.objects.create(name=name,language=language)
+def create_category(name, language):
+    Category.objects.create(name=name, language=language)
+
 
 def delete_all_categories():
     Category.objects.all().delete()
-
 
 
 def create_new_storage(request):
@@ -169,15 +146,16 @@ def create_new_storage(request):
             newIngredient = Ingredient.objects.all().get(name=name)
 
         # new Storage_Ingredient relation
-        Storage_Ingredient.objects.create(unit=Unit.objects.get(id=unit), amount=amount, ing_ID_id=newIngredient.id, storage_ID_id=newStorage.id)
+        Storage_Ingredient.objects.create(unit=Unit.objects.get(id=unit), amount=amount, ing_ID_id=newIngredient.id,
+                                          storage_ID_id=newStorage.id)
 
     return newStorage.id
-
 
 
 """
 INIT STUFF
 """
+
 
 def create_units_from_csv():
     delete_all_units()
@@ -185,6 +163,7 @@ def create_units_from_csv():
     im.read_unit_csv('stomach_src/initial_data/units_GER.csv', 'GER')
     for unit in im.get_unit_dict().values():
         create_unit(unit.get_name(), unit.get_short(), unit.get_language())
+
 
 def create_categories_from_csv():
     delete_all_categories()

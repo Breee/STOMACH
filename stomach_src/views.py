@@ -92,8 +92,8 @@ def recipe_edit(request, recipe_id):
     public = recipecontext['isPublic']
 
     if request.method == "POST":
-        newId = DBUtils.create_new_recipe(request)
-        Recipe_Versions.objects.create(parent_ID_id=recipe_id, recipe_ID_id=newId, version=1)
+        DBUtils.hide_recipe(recipe_id)
+        DBUtils.create_new_recipe(request)
         message = "Thanks, your recipe was edited"
         context = {'success': message}
 
