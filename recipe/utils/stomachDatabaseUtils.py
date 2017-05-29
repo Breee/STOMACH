@@ -1,7 +1,8 @@
-from stomach_src.initial_data.InitialValueManager import InitialValueManager
-import stomach_src.utils.postDataProcessor as PostProcessor
 from django.shortcuts import *
-from stomach_src.models import *
+
+import recipe.utils.postDataProcessor as PostProcessor
+from recipe.initial_data.InitialValueManager import InitialValueManager
+from recipe.models import *
 
 
 def get_recipe_versions(recipe_ID, user_ID):
@@ -165,7 +166,7 @@ INIT STUFF
 def create_units_from_csv():
     delete_all_units()
     im = InitialValueManager()
-    im.read_unit_csv('stomach_src/initial_data/units_GER.csv', 'GER')
+    im.read_unit_csv('recipe/initial_data/units_GER.csv', 'GER')
     for unit in im.get_unit_dict().values():
         create_unit(unit.get_name(), unit.get_short(), unit.get_language())
 
@@ -173,6 +174,6 @@ def create_units_from_csv():
 def create_categories_from_csv():
     delete_all_categories()
     im = InitialValueManager()
-    im.read_category_csv('stomach_src/initial_data/categories_EN_US.csv', 'EN_US')
+    im.read_category_csv('recipe/initial_data/categories_EN_US.csv', 'EN_US')
     for category in im.get_category_dict().values():
         create_category(category.get_name(), category.get_language())

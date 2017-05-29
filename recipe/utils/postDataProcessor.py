@@ -1,5 +1,4 @@
 import re
-from stomach_src.models import *
 
 def clean_recipe_post_data(request):
     # convert post data from a querydict to a dict where values are lists.
