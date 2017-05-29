@@ -3,6 +3,7 @@ from django.shortcuts import *
 import recipe.utils.postDataProcessor as PostProcessor
 from recipe.initial_data.InitialValueManager import InitialValueManager
 from recipe.models import *
+from storage.models import *
 
 
 def get_recipe_versions(recipe_ID, user_ID):
