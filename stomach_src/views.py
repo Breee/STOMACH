@@ -92,8 +92,8 @@ def recipe_edit(request, recipe_id):
     public = recipecontext['isPublic']
 
     if request.method == "POST":
-        Recipe.objects.filter(id=recipe_id).delete()
-        DBUtils.create_new_recipe(request)
+        newId = DBUtils.create_new_recipe(request)
+        Recipe_Versions.objects.create(parent_ID_id=recipe_id, recipe_ID_id=newId, version=1)
         message = "Thanks, your recipe was edited"
         context = {'success': message}
 
@@ -117,7 +117,6 @@ def recipe_edit(request, recipe_id):
         return render(request,
                       'html/recipe/recipe_edit.html',
                       context)
-
 
 
 
@@ -218,3 +217,4 @@ def initialize_Units(request):
 
 def initialize_Categories(request):
     DBUtils.create_categories_from_csv()
+

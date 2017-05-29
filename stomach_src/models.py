@@ -106,6 +106,11 @@ class Creator_Recipe(models.Model):
     recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE)
     public = models.BooleanField(default=True)
 
+class Recipe_Versions(models.Model):
+    parent_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE,related_name='parent_recipe')
+    recipe_ID = models.ForeignKey(Recipe, on_delete=models.CASCADE,related_name='child_recipe')
+    version = models.PositiveIntegerField(default=0)
+
 
 
 """

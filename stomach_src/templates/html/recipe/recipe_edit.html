@@ -30,24 +30,24 @@
             <div class="panel panel-default formsetContainer">
                 <div class="panel-heading"> Ingredients:</div>
                 <div class="panel-body">
-                    {% for form in ingredientFormset %}
+                    {% for form in ingredientFormset.forms %}
                         <div class="ingredient-formset formsetSubelement formset">
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
+                {{ ingredientFormset.management_form }}
                 </div>
             </div>
 
             <div class="panel panel-default formsetContainer">
                 <div class="panel-heading"> Categories:</div>
                 <div class="panel-body">
-
-                    {% for form in categoryFormset %}
+                    {% for form in categoryFormset.forms %}
                         <div class="category-formset formsetSubelement formset">
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
-
+                {{ categoryFormset.management_form }}
                 </div>
             </div>
 

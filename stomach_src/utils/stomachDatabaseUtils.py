@@ -1,6 +1,16 @@
 from stomach_src.initial_data.InitialValueManager import InitialValueManager
+import stomach_src.utils.postDataProcessor as PostProcessor
 from django.shortcuts import *
 from stomach_src.models import *
+
+
+def get_recipe_versions(recipe_ID, user_ID):
+    relatedRecipes = Recipe_Versions.objects.filter(parent_ID=recipe_ID).values_list('recipe_ID')
+    print(relatedRecipes)
+    id_recipe = dict()
+    for recipe in relatedRecipes:
+         id_recipe[recipe[0]] = (get_recipe_details(recipe[0],user_ID))
+    return id_recipe
 
 
 def get_recipe_details(recipe_id, user_ID):
@@ -27,11 +37,17 @@ def get_recipe_details(recipe_id, user_ID):
         context =  None
     return context
 
+
 def create_new_recipe(request):
+
     creator_ID = request.user.id
 
     # convert post data from a querydict to a dict where values are lists.
     dataDict = dict(request.POST.lists())
+    print(dataDict)
+
+    PostProcessor.clean(request)
+
 
     # post data
     name = dataDict["name"][0]
@@ -57,6 +73,9 @@ def create_new_recipe(request):
     else:
         newCreatorRecipe.public = False
     newCreatorRecipe.save()
+
+    # related recipe
+    Recipe_Versions.objects.create(parent_ID_id=newRecipe.id,recipe_ID_id=newRecipe.id,version=1)
 
     # create new ingredients + ing_recipe relations
     # also add a tag for each ingredient's name.
@@ -92,6 +111,8 @@ def create_new_recipe(request):
             print("No categories set")
 
     return newRecipe.id
+
+
 
 
 def hide_recipe(recipe_id):

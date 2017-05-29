@@ -6,6 +6,8 @@ urlpatterns = [
 
     url(r'^$', views.home, name='home'),
     url(r'^home/$', views.home, name='home'),
+    url(r'^initUnit/$', views.initialize_Units, name='initUnits'),
+    url(r'^initCategories/$', views.initialize_Categories, name='initCategories'),
     # recipe related stuff
     url(r'^recipes/$', views.recipes_list, name='recipes_list'),
     url(r'^recipes/(?P<message>\w+)$', views.recipes_list, name='recipes_list'),
