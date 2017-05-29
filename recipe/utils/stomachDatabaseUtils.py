@@ -173,6 +173,6 @@ def create_units_from_csv():
 def create_categories_from_csv():
     delete_all_categories()
     im = InitialValueManager()
-    im.read_category_csv('stomach_src/initial_data/categories.csv')
+    im.read_category_csv('stomach_src/initial_data/categories_EN_US.csv', 'EN_US')
     for category in im.get_category_dict().values():
         create_category(category.get_name(), category.get_language())

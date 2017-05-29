@@ -1,6 +1,6 @@
 class Category(object):
 
-    def __init__(self,id,name,language):
+    def __init__(self, id, name, language):
         self.__id = id
         self.__name = name
         self.__language = language
@@ -16,5 +16,3 @@ class Category(object):
 
     def __str__(self):
         return self.__name
-
-

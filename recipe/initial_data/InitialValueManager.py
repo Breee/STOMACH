@@ -1,6 +1,8 @@
-from stomach_src.recipe_calculator.unit import Unit
-from stomach_src.recipe_calculator.category import Category
 import csv
+
+from recipe.recipe_calculator.category import Category
+
+from recipe.recipe_calculator.unit import Unit
 
 
 class InitialValueManager(object):
@@ -8,7 +10,7 @@ class InitialValueManager(object):
         self.__unit_dict = dict()
         self.__category_dict = dict()
 
-    def read_unit_csv(self,csvFile, language):
+    def read_unit_csv(self, csvFile, language):
         with open(csvFile, mode='r') as infile:
             reader = csv.reader(infile)
             unit_id = 0
@@ -21,7 +23,7 @@ class InitialValueManager(object):
                     self.__unit_dict[unit_id] = Unit(unit_id, language, row[0], row[1], row[2], row[3])
                 unit_id += 1
 
-    def read_category_csv(self,csvFile):
+    def read_category_csv(self, csvFile, language):
         with open(csvFile, mode='r') as infile:
             reader = csv.reader(infile)
             category_id = 0
@@ -31,9 +33,8 @@ class InitialValueManager(object):
                 if category_id == 0:
                     header = row
                 else:
-                    self.__category_dict[category_id] = Category(category_id, row[0], row[1])
+                    self.__category_dict[category_id] = Category(category_id, row[0], language)
                 category_id += 1
-
 
     def get_unit_dict(self):
         return self.__unit_dict

@@ -24,9 +24,3 @@ class IngredientForm(forms.Form):
 
 class CategoryForm(forms.Form):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label=None)
-
-class StorageForm(forms.ModelForm):
-
-    class Meta:
-        model = Storage
-        exclude = ('user_ID',)

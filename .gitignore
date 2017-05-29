@@ -11,3 +11,4 @@ stomach_src/migrations/__pycache__/
 
 virtual_env/
 
+*.pyc

@@ -1,6 +1,5 @@
 class Unit(object):
-
-    def __init__(self,id,language,name,short,to_gram_factor,to_millilitres_factor):
+    def __init__(self, id, language, name, short, to_gram_factor, to_millilitres_factor):
         self.__id = id
         self.__language = language
         self.__name = name
@@ -27,4 +26,4 @@ class Unit(object):
         return self.__to_millilitres_factor
 
     def __str__(self):
-        return "%s(%d)"%(self.get_name(),self.get_id())
+        return "%s(%d)" % (self.get_name(), self.get_id())
