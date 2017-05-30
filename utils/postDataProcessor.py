@@ -19,7 +19,7 @@ def clean_recipe_post_data(request):
         elif key == 'cook_time':
             result['cook_time'] = value[0]
         elif key == 'public':
-            if value == 'on':
+            if value[0] == 'on':
                 result['public'] = True
             else:
                 result['public'] = False

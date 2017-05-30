@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.shortcuts import *
+from django.db.models import Count
 
 import utils.stomachDatabaseUtils as DBUtils
 from .forms import *
@@ -12,22 +13,17 @@ from .forms import *
 """
 
 
-def recipes_list(request, message=""):
-    # get all public recipes
-    public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
-    # get all user recipes
-    user_recipes = DBUtils.get_user_recipes(request).values_list('id')
-    # union public and user recipes
-    public_user = public_recipes.union(user_recipes)
-    recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date').filter(
-        visible=True)
-    # context is a map with elements of the form (id -> iterable)
-    # where the id is the name accessible in html templates.
-    context = {'latest_recipes_list': recipe_list, "message": message}
-    # render will replace the python code in the template with whatever you defined.
+def recipes_list(request, message="", filters=None):
+
+    recipe_list, filter = DBUtils.get_recipe_list(request,filters)
+    context = {'latest_recipes_list': recipe_list, "message": message, 'filters':filter}
+
     return render(request,
                   'html/recipe/recipe_list.html',
                   context)
+
+def filter_recipes(request,category_id):
+    return recipes_list(request,"",category_id)
 
 
 def recipe_detail(request, recipe_id):
@@ -48,7 +44,6 @@ def recipes_user(request):
                   'html/recipe/recipes_user.html',
                   context)
 
-@login_required()
 def recipe_new(request):
     if request.method == "POST":
         DBUtils.create_new_recipe(request)
@@ -77,7 +72,6 @@ def recipe_new(request):
                           'html/recipe/recipe_list.html',
                           context)
 
-@login_required()
 def recipe_edit(request, recipe_id):
     recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id)
     if recipecontext == None or recipecontext['userIsCreator'] == False:
@@ -143,13 +137,11 @@ def not_authorized():
 """
 
 def initialize_Units(request):
-    if request.user.is_superuser:
-       DBUtils.create_units_from_csv()
-       return HttpResponse("units initialized")
+    DBUtils.create_units_from_csv()
+    return HttpResponse("units initialized")
 
 
 def initialize_Categories(request):
-    if request.user.is_superuser:
-       DBUtils.create_categories_from_csv()
-       return HttpResponse("Categories initialized")
+    DBUtils.create_categories_from_csv()
+    return HttpResponse("Categories initialized")
 

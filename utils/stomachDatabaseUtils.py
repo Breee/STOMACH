@@ -4,6 +4,7 @@ import utils.postDataProcessor as PostProcessor
 from recipe.initial_data.InitialValueManager import InitialValueManager
 from recipe.models import *
 from storage.models import *
+from django.db.models import Count
 
 
 def get_recipe_versions(recipe_ID, user_ID):
@@ -45,6 +46,25 @@ def get_user_recipes(request):
     userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
     recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
     return recipes
+
+def get_recipe_list(request,filters):
+    # get all public recipes
+    public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
+    # get all user recipes
+    user_recipes = get_user_recipes(request).values_list('id')
+    # union public and user recipes
+    public_user = public_recipes.union(user_recipes)
+    recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date').filter(
+        visible=True)
+
+    if filters is not None:
+        cat_rec = Category_Recipe.objects.filter(category_ID=filters).values_list('recipe_ID')
+        recipe_list = recipe_list.filter(pk__in=cat_rec)
+
+    filters = Category_Recipe.objects.filter(recipe_ID__in=public_user.values_list('id')).values('category_ID',
+                                                                                'category_ID__name').annotate(
+        count=Count('category_ID'))
+    return  recipe_list,filters
 
 
 def create_new_recipe(request):
