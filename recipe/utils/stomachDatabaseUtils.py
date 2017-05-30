@@ -126,25 +126,18 @@ def delete_all_categories():
 def create_new_storage(request):
     creator_ID = request.user.id
 
-    # convert post data from a querydict to a dict where values are lists.
-    dataDict = dict(request.POST.lists())
-
-    # post data
-    name = dataDict["name"][0]
-    ing_names = dataDict["form-0-name"]
-    ing_unit_IDs = dataDict["form-0-unit"]
-    ing_amounts = dataDict["form-0-amount"]
+    # process post request data
+    cleanedData = PostProcessor.clean_recipe_post_data(request)
 
     # create new storage
-    newStorage = Storage.objects.create(name=name, user_ID_id=creator_ID)
+    newStorage = Storage.objects.create(name=cleanedData['name'], user_ID_id=creator_ID)
 
     # create new ingredients and Storage_Ingredient relations
-    for i in range(0, len(ing_names)):
+    for id,value in cleanedData['ingredients'].items():
         # ingredient name + unit + amount
-        # TODO: check for duplicates, should probably already happen on the frontend side.
-        name = ing_names[i]
-        unit = ing_unit_IDs[i]
-        amount = ing_amounts[i]
+        name = value['name']
+        unit = value['unit']
+        amount = value['amount']
 
         # new ingredient
         if Ingredient.objects.all().filter(name=name).count() == 0:
