@@ -1,6 +1,6 @@
 from django.shortcuts import *
 
-import recipe.utils.postDataProcessor as PostProcessor
+import utils.postDataProcessor as PostProcessor
 from recipe.initial_data.InitialValueManager import InitialValueManager
 from recipe.models import *
 from storage.models import *
@@ -151,6 +151,13 @@ def create_new_storage(request):
 
     return newStorage.id
 
+def hide_storage(storage_id):
+    try:
+        storage = Storage.objects.get(id=storage_id)
+        storage.visible = False
+        storage.save()
+    except:
+        raise ValueError("storage with id %d does not exist" % storage_id)
 
 """
 INIT STUFF

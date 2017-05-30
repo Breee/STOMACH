@@ -3,6 +3,13 @@
 {% load staticfiles %}
 {% block content %}
 
+    {% if success %}
+
+        <div class="alert alert-success" role="alert">{{ success }}</div>
+        <a href="{% url 'storage_new' %}" class="btn btn-info" role="button">add another storage</a>
+
+    {% else %}
+
     <h1>New Storage</h1>
 
     <form method="POST" class="post-form">{% csrf_token %}
@@ -31,5 +38,6 @@
         <button type="submit" class="save btn btn-default">Save</button>
 
     </form>
+    {% endif %}
 
 {% endblock %}

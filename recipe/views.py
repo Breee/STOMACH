@@ -1,13 +1,9 @@
-from django.shortcuts import *
 from django.contrib.auth.decorators import login_required
-
 from django.forms import formset_factory
+from django.shortcuts import *
 
-import recipe.utils.stomachDatabaseUtils as DBUtils
-
-from .models import *
+import utils.stomachDatabaseUtils as DBUtils
 from .forms import *
-
 
 """
 #########################################################
@@ -52,7 +48,7 @@ def recipes_user(request):
                   'html/recipe/recipes_user.html',
                   context)
 
-
+@login_required()
 def recipe_new(request):
     if request.method == "POST":
         DBUtils.create_new_recipe(request)
@@ -81,7 +77,7 @@ def recipe_new(request):
                           'html/recipe/recipe_list.html',
                           context)
 
-
+@login_required()
 def recipe_edit(request, recipe_id):
     recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id)
     if recipecontext == None or recipecontext['userIsCreator'] == False:
@@ -136,8 +132,6 @@ def redirect_to_recipes_list(request):
 """
 UTILS
 """
-
-
 def not_authorized():
     return HttpResponse("You are not authorized to do that.")
 
@@ -148,10 +142,14 @@ def not_authorized():
 ###############################################################
 """
 
-
 def initialize_Units(request):
-    DBUtils.create_units_from_csv()
+    if request.user.is_superuser:
+       DBUtils.create_units_from_csv()
+       return HttpResponse("units initialized")
 
 
 def initialize_Categories(request):
-    DBUtils.create_categories_from_csv()
+    if request.user.is_superuser:
+       DBUtils.create_categories_from_csv()
+       return HttpResponse("Categories initialized")
+
