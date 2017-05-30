@@ -3,6 +3,8 @@
 {% load staticfiles %}
 {% block content %}
 
+
+
     {% if success %}
 
         <div class="alert alert-success" role="alert">{{ success }}</div>
@@ -35,7 +37,7 @@
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
-                {{ ingredientFormset.management_form }}
+                    {{ ingredientFormset.management_form }}
                 </div>
             </div>
 
@@ -47,7 +49,7 @@
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
-                {{ categoryFormset.management_form }}
+                    {{ categoryFormset.management_form }}
                 </div>
             </div>
 
