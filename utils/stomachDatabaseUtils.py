@@ -42,12 +42,14 @@ def get_recipe_details(recipe_id, user_ID):
         context = None
     return context
 
+
 def get_user_recipes(request):
     userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
     recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
     return recipes
 
-def get_recipe_list(request,filters):
+
+def get_recipe_list(request, filters):
     # get all public recipes
     public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
     # get all user recipes
@@ -55,16 +57,16 @@ def get_recipe_list(request,filters):
     # union public and user recipes
     public_user = public_recipes.union(user_recipes)
     recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date').filter(
-        visible=True)
+            visible=True)
 
     if filters is not None:
         cat_rec = Category_Recipe.objects.filter(category_ID=filters).values_list('recipe_ID')
         recipe_list = recipe_list.filter(pk__in=cat_rec)
 
     filters = Category_Recipe.objects.filter(recipe_ID__in=public_user.values_list('id')).values('category_ID',
-                                                                                'category_ID__name').annotate(
-        count=Count('category_ID'))
-    return  recipe_list,filters
+                                                                                                 'category_ID__name').annotate(
+            count=Count('category_ID'))
+    return recipe_list, filters
 
 
 def create_new_recipe(request):
@@ -86,7 +88,7 @@ def create_new_recipe(request):
 
     # create new ingredients + ing_recipe relations
     # also add a tag for each ingredient's name.
-    for id,value in cleanedData['ingredients'].items():
+    for id, value in cleanedData['ingredients'].items():
         # ingredient name + unit + amount
         name = value['name']
         unit = value['unit']
@@ -153,7 +155,7 @@ def create_new_storage(request):
     newStorage = Storage.objects.create(name=cleanedData['name'], user_ID_id=creator_ID)
 
     # create new ingredients and Storage_Ingredient relations
-    for id,value in cleanedData['ingredients'].items():
+    for id, value in cleanedData['ingredients'].items():
         # ingredient name + unit + amount
         name = value['name']
         unit = value['unit']
@@ -171,6 +173,7 @@ def create_new_storage(request):
 
     return newStorage.id
 
+
 def hide_storage(storage_id):
     try:
         storage = Storage.objects.get(id=storage_id)
@@ -178,6 +181,7 @@ def hide_storage(storage_id):
         storage.save()
     except:
         raise ValueError("storage with id %d does not exist" % storage_id)
+
 
 """
 INIT STUFF

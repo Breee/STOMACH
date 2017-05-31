@@ -12,7 +12,6 @@ from .forms import *
 #########################################################
 """
 
-@login_required()
 def storage_new(request):
     if request.method == "POST":
         DBUtils.create_new_storage(request)
@@ -39,11 +38,11 @@ def storage_new(request):
                           'html/storage/storage_view.html',
                           context)
 
-@login_required()
+
 def storage_edit(request, storage_id):
     return HttpResponse("not implemented yet")
 
-@login_required()
+
 def storage_list(request):
     storage_list = Storage.objects.filter(user_ID=request.user.id, visible=True)
     context = {'storage_list': storage_list}
@@ -51,7 +50,7 @@ def storage_list(request):
                   'html/storage/storage_view.html',
                   context)
 
-@login_required()
+
 def storage_detail(request, storage_id):
     storage = get_object_or_404(Storage, id=storage_id, user_ID=request.user, visible=True)
     ingredients = Storage_Ingredient.objects.filter(storage_ID=storage_id)
@@ -60,7 +59,7 @@ def storage_detail(request, storage_id):
                   'html/storage/storage_detail.html',
                   context)
 
-@login_required()
+
 def storage_hide(request, storage_id):
     DBUtils.hide_storage(storage_id)
     return redirect_to_storage_list(request)

@@ -8,12 +8,12 @@ urlpatterns = [
     url(r'^(?P<message>\w+)$', views.recipes_list, name='recipes_list'),
     url(r'^user/$', views.recipes_user, name='recipes_user'),
     # ex: /stomach/5/
-url(r'^filter/(?P<category_id>[0-9]+)/$',views.filter_recipes, name='filter_recipes'),
+    url(r'^filter/(?P<category_id>[0-9]+)/$',views.filter_recipes, name='filter_recipes'),
     url(r'^(?P<recipe_id>[0-9]+)/$', views.recipe_detail, name='recipe_detail'),
     url(r'^new/$', views.recipe_new, name='recipe_new'),
     url(r'^(?P<recipe_id>[0-9]+)/edit/$', views.recipe_edit, name='recipe_edit'),
     url(r'^(?P<recipe_id>[0-9]+)/remove/$', views.recipe_hide, name='recipe_hide'),
-    url(r'^', views.redirect_to_recipes_list, name='redirect_to_recipes_list'),
+    url(r'^$', views.redirect_to_recipes_list, name='redirect_to_recipes_list'),
 
 ]
 
