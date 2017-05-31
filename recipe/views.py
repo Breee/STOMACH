@@ -14,7 +14,6 @@ from .forms import *
 
 
 def recipes_list(request, message="", filters=None):
-
     recipe_list, filter = DBUtils.get_recipe_list(request,filters)
     context = {'latest_recipes_list': recipe_list, "message": message, 'filters':filter}
 
@@ -65,12 +64,8 @@ def recipe_new(request):
                           'html/recipe/recipe_edit.html',
                           context)
         else:
-            recipes_list = Recipe.objects.order_by('-published_date').filter(visible=True)
             message = "Only logged in users can create new recipes."
-            context = {'notAuthorized': message, 'latest_recipes_list': recipes_list}
-            return render(request,
-                          'html/recipe/recipe_list.html',
-                          context)
+            return recipes_list(request, message, None)
 
 def recipe_edit(request, recipe_id):
     recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id)

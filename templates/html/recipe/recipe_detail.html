@@ -5,57 +5,49 @@
 {% block nav-style %}mkt-nav{% endblock nav-style %}
 
 {% block content %}
-    {# Hero Section #}
-    <div class="mkt-s1">
-        <div class="mkt-s1-body container ">
-            <div class="row">
-                <h1 class="col-md-8">{{ recipe.name }}</h1>
-            </div>
-            <div class="row">
-                <p class="col-md-8">Description: {{ recipe.description }}</p>
-            </div>
-        </div>
+
+    <div class="row text-center">
+        <h1>{{ recipe.name }}</h1>
     </div>
 
-    {# Main Section #}
-    <div class="mkt-s2 container">
-        <h2 class="mkt-s2-h">Ingredients:</h2>
-        <div class="mkt-s2-body">
-            <ul>
-                {% for ingredient in ingredients %}
-                    <li>
-                        <b>
-                            {{ ingredient.amount }}
-                            {% if ingredient.unit.short != "-" %}
-                                {{ ingredient.unit }}
-                            {% endif %}
-                        </b>
-                        {{ ingredient.ing_ID.name }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="container">
+        <h2>Description:</h2>
+        <p>{{ recipe.description }}</p>
+    </div>
     </div>
 
-    <div class="mkt-s2 container">
-        <h2 class="mkt-s2-h">Description:</h2>
-        <div class="mkt-s2-body">
-            {{ recipe.description }}
-        </div>
+    <div class="container">
+        <h2>Ingredients:</h2>
+        <table class="table">
+            <thead>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Unit</th>
+            </thead>
+            <tbody>
+            {% for ingredient in ingredients %}
+                <tr>
+                <td>{{ ingredient.ing_ID.name }} </td>
+                <td>{{ ingredient.amount }}</td>
+                    <td><b> {{ ingredient.unit }} </b></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    <div class="mkt-s2 container">
-        <h2 class="mkt-s2-h">Amount of persons:</h2>
-        <div class="mkt-s2-body">
+    <div class="container">
+        <h2>Amount of persons:</h2>
+        <p class="mkt-s2-body">
             {{ recipe.person_amount }}
-        </div>
+        </p>
     </div>
 
-    <div class="mkt-s2 container">
-        <h2 class="mkt-s2-h">Cook time:</h2>
-        <div class="mkt-s2-body">
+    <div class="container">
+        <h2 >Cook time:</h2>
+        <p>
             {{ recipe.cook_time }}
-        </div>
+        </p>
     </div>
 
     <div class="mkt-s2 container">
@@ -84,7 +76,8 @@
             <div class="row">
                 <div class="col-lg-1"><a href="{% url 'recipe_edit' recipe.id %}" class="btn btn-info"><span
                         class="glyphicon glyphicon-edit"></span> Edit</a></div>
-                <div class="col-lg-1"><a href="{% url 'recipe_hide' recipe.id %}" class="btn btn-info" onclick="return confirm('Are you sure you want to remove this recipe?')"><span
+                <div class="col-lg-1"><a href="{% url 'recipe_hide' recipe.id %}" class="btn btn-info"
+                                         onclick="return confirm('Are you sure you want to remove this recipe?')"><span
                         class="glyphicon glyphicon-trash"></span> Remove</a></div>
                 <div class="col-lg-10"></div>
             </div>

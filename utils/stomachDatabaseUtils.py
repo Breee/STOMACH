@@ -63,7 +63,7 @@ def get_recipe_list(request, filters):
         cat_rec = Category_Recipe.objects.filter(category_ID=filters).values_list('recipe_ID')
         recipe_list = recipe_list.filter(pk__in=cat_rec)
 
-    filters = Category_Recipe.objects.filter(recipe_ID__in=public_user.values_list('id')).values('category_ID',
+    filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id')).values('category_ID',
                                                                                                  'category_ID__name').annotate(
             count=Count('category_ID'))
     return recipe_list, filters

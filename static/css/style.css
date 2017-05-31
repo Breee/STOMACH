@@ -1,5 +1,32 @@
-li{
-    color: green;
+/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+.row.content {
+    height: 700px
+}
+
+/* Set gray background color and 100% height */
+.sidenav {
+    padding-top: 20px;
+    background-color: #f1f1f1;
+    height: 100%;
+}
+
+/* Set black background color, white text and some padding */
+footer {
+    background-color: #555;
+    color: white;
+    padding: 15px;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+    .sidenav {
+        height: auto;
+        padding: 15px;
+    }
+
+    .row.content {
+        height: auto;
+    }
 }
 
 .formsetSubelement {
@@ -7,12 +34,13 @@ li{
     display: flex;
     border-collapse: separate;
 }
+
 .formsetSubelement p {
     padding-right: 1em;
 
 }
 
-.formsetContainer{
+.formsetContainer {
     margin-top: 0.2em;
     margin-bottom: 0.2em;
 }
@@ -21,48 +49,44 @@ textarea#id_description {
     vertical-align: top;
 }
 
-.formsetContainer .panel-body table tbody tr th{
+.formsetContainer .panel-body table tbody tr th {
     text-align: left;
     padding-right: 2em;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
 }
 
-
-
-
-
-.mini-submenu{
-  display:none;
-  background-color: rgba(0, 0, 0, 0);
-  border: 1px solid rgba(0, 0, 0, 0.9);
-  border-radius: 4px;
-  padding: 9px;
-  /*position: relative;*/
-  width: 42px;
+.mini-submenu {
+    display: none;
+    background-color: rgba(0, 0, 0, 0);
+    border: 1px solid rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    padding: 9px;
+    /*position: relative;*/
+    width: 42px;
 
 }
 
-.mini-submenu:hover{
-  cursor: pointer;
+.mini-submenu:hover {
+    cursor: pointer;
 }
 
 .mini-submenu .icon-bar {
-  border-radius: 1px;
-  display: block;
-  height: 2px;
-  width: 22px;
-  margin-top: 3px;
+    border-radius: 1px;
+    display: block;
+    height: 2px;
+    width: 22px;
+    margin-top: 3px;
 }
 
 .mini-submenu .icon-bar {
-  background-color: #000;
+    background-color: #000;
 }
 
-#slide-submenu{
-  background: rgba(0, 0, 0, 0.45);
-  display: inline-block;
-  padding: 0 8px;
-  border-radius: 4px;
-  cursor: pointer;
+#slide-submenu {
+    background: rgba(0, 0, 0, 0.45);
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 4px;
+    cursor: pointer;
 }
