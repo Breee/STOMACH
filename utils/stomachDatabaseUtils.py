@@ -64,15 +64,8 @@ def get_recipe_list(request, active_filters=None):
 
     # the active filters are a list of category ids,
     if active_filters is not None:
-        # queries is a one element list which contains a list of queries.
-        queries = [Q(category_ID=value) for value in active_filters]
-        query = queries.pop()
-        for item in queries:
-            query &= item
-
         # filter category_recipe objects by active filters.
-        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters).annotate(
-            count=Count('recipe_ID')).filter(count=len(active_filters)).values_list('recipe_ID')
+        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters).values_list('recipe_ID')
         print(cat_rec)
         # filter recipes by all recipes related to the active filters.
         recipe_list = recipe_list.filter(pk__in=cat_rec)
