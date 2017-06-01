@@ -90,3 +90,8 @@ textarea#id_description {
     border-radius: 4px;
     cursor: pointer;
 }
+
+.selected-filter {
+    font-weight: bold;
+    background-color: lightgray;
+}

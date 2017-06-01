@@ -5,6 +5,7 @@ from recipe.initial_data.InitialValueManager import InitialValueManager
 from recipe.models import *
 from storage.models import *
 from django.db.models import Count
+from django.db.models import Q
 
 
 def get_recipe_versions(recipe_ID, user_ID):
@@ -49,24 +50,46 @@ def get_user_recipes(request):
     return recipes
 
 
-def get_recipe_list(request, filters):
+def get_recipe_list(request, active_filters=None):
     # get all public recipes
     public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
     # get all user recipes
     user_recipes = get_user_recipes(request).values_list('id')
     # union public and user recipes
     public_user = public_recipes.union(user_recipes)
-    recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date').filter(
-            visible=True)
+    recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
 
-    if filters is not None:
-        cat_rec = Category_Recipe.objects.filter(category_ID=filters).values_list('recipe_ID')
+    # initialize selected filters to prevent errors.
+    selected_filters = Category_Recipe.objects.none()
+
+    # the active filters are a list of category ids,
+    if active_filters is not None:
+        # queries is a one element list which contains a list of queries.
+        queries = [Q(category_ID=value) for value in active_filters]
+        query = queries.pop()
+        for item in queries:
+            query &= item
+
+        # filter category_recipe objects by active filters.
+        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters).annotate(
+            count=Count('recipe_ID')).filter(count=len(active_filters)).values_list('recipe_ID')
+        print(cat_rec)
+        # filter recipes by all recipes related to the active filters.
         recipe_list = recipe_list.filter(pk__in=cat_rec)
+        # selected filters is a queryset of categories, where the category id appears in the active_filters
+        selected_filters = Category.objects.filter(pk__in=active_filters)
+    else:
+        active_filters = Category.objects.none()
 
-    filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id')).values('category_ID',
-                                                                                                 'category_ID__name').annotate(
+    # filters are determined as follows, we filter by the recipes in the recipe_list, we exclude active filters to
+    # prevent duplicates,
+    # we annotate the queryset with a value count, which equals the amount of appearences of a category_id.
+    # ---> a queryset {(category_id_1,category_id__name_1,count_1),...,(category_id_n,category_id_name_n ,count_n) }
+    filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id')).exclude(
+            category_ID__in=active_filters).values('category_ID',
+                                                   'category_ID__name').annotate(
             count=Count('category_ID'))
-    return recipe_list, filters
+    return recipe_list, filters, selected_filters
 
 
 def create_new_recipe(request):
