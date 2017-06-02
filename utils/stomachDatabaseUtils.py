@@ -60,13 +60,15 @@ def get_recipe_list(request, active_filters=None):
     recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
 
     # initialize selected filters to prevent errors.
-    selected_filters = Category_Recipe.objects.none()
+    selected_filters = Category.objects.none()
 
     # the active filters are a list of category ids,
     if active_filters is not None:
         # filter category_recipe objects by active filters.
-        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters).values_list('recipe_ID')
-        print(cat_rec)
+        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters)\
+            .values('recipe_ID')\
+            .annotate(count=Count('recipe_ID'))\
+            .filter(count=len(active_filters)).values('recipe_ID')
         # filter recipes by all recipes related to the active filters.
         recipe_list = recipe_list.filter(pk__in=cat_rec)
         # selected filters is a queryset of categories, where the category id appears in the active_filters
@@ -76,12 +78,12 @@ def get_recipe_list(request, active_filters=None):
 
     # filters are determined as follows, we filter by the recipes in the recipe_list, we exclude active filters to
     # prevent duplicates,
-    # we annotate the queryset with a value count, which equals the amount of appearences of a category_id.
+    # we annotate the queryset with a value count, which equals the amount of appeare nces of a category_id.
     # ---> a queryset {(category_id_1,category_id__name_1,count_1),...,(category_id_n,category_id_name_n ,count_n) }
-    filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id')).exclude(
-            category_ID__in=active_filters).values('category_ID',
-                                                   'category_ID__name').annotate(
-            count=Count('category_ID'))
+    filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id'))\
+                                     .exclude(category_ID__in=active_filters)\
+                                     .values('category_ID', 'category_ID__name')\
+                                     .annotate(count=Count('category_ID'))
     return recipe_list, filters, selected_filters
 
 
