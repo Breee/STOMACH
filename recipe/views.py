@@ -2,9 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.shortcuts import *
 
-
 import utils.stomachDatabaseUtils as DBUtils
 from .forms import *
+
 
 """
 #########################################################

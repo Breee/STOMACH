@@ -1,23 +1,19 @@
 from django.shortcuts import *
-
 import utils.postDataProcessor as PostProcessor
 from recipe.initial_data.InitialValueManager import InitialValueManager
 from recipe.models import *
 from storage.models import *
 from django.db.models import Count
-from django.db.models import Q
-
-
-def get_recipe_versions(recipe_ID, user_ID):
-    relatedRecipes = Recipe_Versions.objects.filter(parent_ID=recipe_ID).values_list('recipe_ID')
-    print(relatedRecipes)
-    id_recipe = dict()
-    for recipe in relatedRecipes:
-        id_recipe[recipe[0]] = (get_recipe_details(recipe[0], user_ID))
-    return id_recipe
 
 
 def get_recipe_details(recipe_id, user_ID):
+    """
+    Function that gets a recipes details.
+    :param recipe_id: 
+    :param user_ID: 
+    :return: context that contains recipe informations 'recipe', 'ingredients','tags','categories', 'userIsCreator',
+    'isPublic'
+    """
     recipe = get_object_or_404(Recipe, pk=recipe_id, visible=True)
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
@@ -45,12 +41,24 @@ def get_recipe_details(recipe_id, user_ID):
 
 
 def get_user_recipes(request):
+    """
+    Function that returns a queryset that contains all recipes that belong to a user.
+    :param request: 
+    :return: Queryset that contains Recipe objects.
+    """
     userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
     recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
     return recipes
 
 
 def get_recipe_list(request, active_filters=None):
+    """
+    Function that returns a list of recipes, filters and selected filters.
+    :param request: 
+    :param active_filters: 
+    :return: queryset of recipes, queryset of available filters, queryset of selected filters
+    """
+
     # get all public recipes
     public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
     # get all user recipes
@@ -65,9 +73,9 @@ def get_recipe_list(request, active_filters=None):
     # the active filters are a list of category ids,
     if active_filters is not None:
         # filter category_recipe objects by active filters.
-        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters)\
-            .values('recipe_ID')\
-            .annotate(count=Count('recipe_ID'))\
+        cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters) \
+            .values('recipe_ID') \
+            .annotate(count=Count('recipe_ID')) \
             .filter(count=len(active_filters)).values('recipe_ID')
         # filter recipes by all recipes related to the active filters.
         recipe_list = recipe_list.filter(pk__in=cat_rec)
@@ -80,14 +88,19 @@ def get_recipe_list(request, active_filters=None):
     # prevent duplicates,
     # we annotate the queryset with a value count, which equals the amount of appeare nces of a category_id.
     # ---> a queryset {(category_id_1,category_id__name_1,count_1),...,(category_id_n,category_id_name_n ,count_n) }
-    filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id'))\
-                                     .exclude(category_ID__in=active_filters)\
-                                     .values('category_ID', 'category_ID__name')\
-                                     .annotate(count=Count('category_ID'))
-    return recipe_list, filters, selected_filters
+    available_filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id')) \
+        .exclude(category_ID__in=active_filters) \
+        .values('category_ID', 'category_ID__name') \
+        .annotate(count=Count('category_ID'))
+    return recipe_list, available_filters, selected_filters
 
 
 def create_new_recipe(request):
+    """
+    Function that creates a new recipe.
+    :param request: 
+    :return: 
+    """
     creator_ID = request.user.id
 
     # process post request data
@@ -101,12 +114,11 @@ def create_new_recipe(request):
 
     # create Creator_Recipe relation
     Creator_Recipe.objects.create(recipe_ID_id=newRecipe.id, creator_ID_id=creator_ID, public=cleanedData['public'])
-    # related recipe
-    Recipe_Versions.objects.create(parent_ID_id=newRecipe.id, recipe_ID_id=newRecipe.id, version=1)
 
     # create new ingredients + ing_recipe relations
     # also add a tag for each ingredient's name.
     for id, value in cleanedData['ingredients'].items():
+        print(id,value)
         # ingredient name + unit + amount
         name = value['name']
         unit = value['unit']
@@ -209,7 +221,7 @@ INIT STUFF
 def create_units_from_csv():
     delete_all_units()
     im = InitialValueManager()
-    im.read_unit_csv('recipe/initial_data/units_GER.csv', 'GER')
+    im.read_unit_csv('recipe/initial_data/units_EN_US.csv', 'EN_US')
     for unit in im.get_unit_dict().values():
         create_unit(unit.get_name(), unit.get_short(), unit.get_language())
 

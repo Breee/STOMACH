@@ -128,3 +128,4 @@ STATICFILES_DIRS = [
 
 LOGIN_REDIRECT_URL = 'recipes_list'
 LOGIN_URL = '/login'
+
