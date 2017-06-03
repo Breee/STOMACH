@@ -9,16 +9,15 @@
     <div class="row text-center">
         <h1>{{ recipe.name }}</h1>
     </div>
-
+    <hr>
     <div class="container">
         <h2>Description:</h2>
         <p>{{ recipe.description }}</p>
     </div>
-    </div>
-
+    <hr>
     <div class="container">
         <h2>Ingredients:</h2>
-        <table class="table">
+        <table class="table table-bordered table-striped table-hover table-responsive">
             <thead>
             <th>Name</th>
             <th>Amount</th>
@@ -35,21 +34,21 @@
             </tbody>
         </table>
     </div>
-
+    <hr>
     <div class="container">
         <h2>Amount of persons:</h2>
         <p class="mkt-s2-body">
             {{ recipe.person_amount }}
         </p>
     </div>
-
+    <hr>
     <div class="container">
         <h2 >Cook time:</h2>
         <p>
             {{ recipe.cook_time }}
         </p>
     </div>
-
+    <hr>
     <div class="mkt-s2 container">
         <h2 class="mkt-s2-h">Categories:</h2>
         <div class="mkt-s2-body">
@@ -60,7 +59,7 @@
             </ul>
         </div>
     </div>
-
+    <hr>
     <div class="mkt-s2 container">
         <h2 class="mkt-s2-h">Tags:</h2>
         <div class="mkt-s2-body">
@@ -71,6 +70,7 @@
             </ul>
         </div>
     </div>
+    <hr>
     {% if userIsCreator %}
         <div class="container">
             <div class="row">

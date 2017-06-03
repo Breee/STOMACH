@@ -51,12 +51,13 @@ def get_user_recipes(request):
     :param request: 
     :return: Queryset that contains Recipe objects.
     """
+    print(request.user.id)
     userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
     recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
     return recipes
 
 
-def get_recipe_list(request, active_filters=None):
+def get_recipe_list(request, active_filters=None, user_recipe=False):
     """
     Function that returns a list of recipes, filters and selected filters.
     :param request: 
@@ -70,9 +71,15 @@ def get_recipe_list(request, active_filters=None):
         public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
         # get all user recipes
         user_recipes = get_user_recipes(request).values_list('id')
-        # union public and user recipes
-        public_user = public_recipes.union(user_recipes)
-        recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
+        print(user_recipes)
+
+        # differ between user and public recipes view
+        if user_recipe:
+            recipe_list = Recipe.objects.filter(pk__in=user_recipes, visible=True).order_by('-published_date')
+        else:
+            # union public and user recipes
+            public_user = public_recipes.union(user_recipes)
+            recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
 
     # initialize selected filters to prevent errors.
     selected_filters = Category.objects.none()

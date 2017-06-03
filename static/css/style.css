@@ -95,3 +95,7 @@ textarea#id_description {
     font-weight: bold;
     background-color: lightgray;
 }
+
+.recipefilter-header {
+    font-weight: bold;
+}

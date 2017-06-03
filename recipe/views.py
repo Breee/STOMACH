@@ -13,14 +13,14 @@ from .forms import *
 """
 
 
-def recipes_list(request, message=""):
+def recipes_list(request, message="", user_recipes=False):
     # filters are get requests
     # there are two queries related to filters, ?filter=xxx and ?removefilter=xxx
     # ?filter=xxx will apply a filter and ?removefilter=xxx will remove it.
     filters = request.GET.getlist('filter')
     removedFilters = request.GET.getlist('removefilter')
     filters = [x for x in filters if x not in removedFilters]
-    recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters)
+    recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters, user_recipes)
     filter_string = build_filter_string(selected_filters)
     context = {
         'latest_recipes_list': recipe_list, "message": message, 'filters': filter, 'selected_filters': selected_filters,
@@ -62,12 +62,7 @@ def recipe_detail(request, recipe_id):
 
 @login_required
 def recipes_user(request):
-    recipes = DBUtils.get_user_recipes(request)
-    context = {'recipes': recipes}
-    return render(request,
-                  'html/recipe/recipes_user.html',
-                  context)
-
+    return recipes_list(request,"",user_recipes=True)
 
 def recipe_new(request):
     if request.method == "POST":
