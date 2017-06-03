@@ -32,7 +32,7 @@
                 <div class="panel-heading"> General:</div>
                 <div class="panel-body">
                     <table>
-                        {{ form.as_table }}
+                        {{ recipe_formset.as_table }}
                     </table>
                 </div>
             </div>
@@ -40,24 +40,24 @@
             <div class="panel panel-default formsetContainer">
                 <div class="panel-heading"> Ingredients:</div>
                 <div class="panel-body">
-                    {% for form in ingredientFormset.forms %}
+                    {% for form in ingredient_formset.forms %}
                         <div class="ingredient-formset formsetSubelement formset">
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
-                    {{ ingredientFormset.management_form }}
+                    {{ ingredient_formset.management_form }}
                 </div>
             </div>
 
             <div class="panel panel-default formsetContainer">
                 <div class="panel-heading"> Categories:</div>
                 <div class="panel-body">
-                    {% for form in categoryFormset.forms %}
+                    {% for form in category_formset.forms %}
                         <div class="category-formset formsetSubelement formset">
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
-                    {{ categoryFormset.management_form }}
+                    {{ category_formset.management_form }}
                 </div>
             </div>
 

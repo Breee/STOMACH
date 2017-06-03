@@ -23,22 +23,25 @@ def get_recipe_details(recipe_id, user_ID, is_superuser):
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
-    # check if user is the creator of the recipe in order to enable an edit function.
-    try:
-        Creator_Recipe.objects.get(recipe_ID=recipe_id, creator_ID=user_ID)
-        isCreator = True
-    except:
-        isCreator = False
+    # check if user is the creator or admin of the recipe in order to enable an edit function.
+    if is_superuser:
+        user_can_edit = True
+    else:
+        try:
+            Creator_Recipe.objects.get(recipe_ID=recipe_id, creator_ID=user_ID)
+            user_can_edit = True
+        except:
+            user_can_edit = False
 
     try:
-        isPublic = Creator_Recipe.objects.get(recipe_ID=recipe_id).public
+        recipe_is_public = Creator_Recipe.objects.get(recipe_ID=recipe_id).public
     except:
         raise KeyError("recipe with id: " + recipe_id + " does not exist.")
 
-    if (isCreator) or (not isCreator and isPublic):
+    if (user_can_edit) or (not user_can_edit and recipe_is_public):
         context = {
             'recipe':        recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
-            'userIsCreator': isCreator, 'isPublic': isPublic
+            'user_can_edit': user_can_edit, 'recipe_is_public': recipe_is_public
             }
     else:
         context = None

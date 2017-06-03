@@ -71,7 +71,7 @@
         </div>
     </div>
     <hr>
-    {% if userIsCreator %}
+    {% if user_can_edit %}
         <div class="container">
             <div class="row">
                 <div class="col-lg-1"><a href="{% url 'recipe_edit' recipe.id %}" class="btn btn-info"><span
