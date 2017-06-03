@@ -14,7 +14,6 @@ urlpatterns = [
     url(r'^(?P<recipe_id>[0-9]+)/edit/$', views.recipe_edit, name='recipe_edit'),
     url(r'^(?P<recipe_id>[0-9]+)/remove/$', views.recipe_hide, name='recipe_hide'),
     url(r'^$', views.redirect_to_recipes_list, name='redirect_to_recipes_list'),
-
 ]
 
 

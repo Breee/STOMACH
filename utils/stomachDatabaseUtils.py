@@ -6,7 +6,7 @@ from storage.models import *
 from django.db.models import Count
 
 
-def get_recipe_details(recipe_id, user_ID):
+def get_recipe_details(recipe_id, user_ID, is_superuser):
     """
     Function that gets a recipes details.
     :param recipe_id: 
@@ -14,7 +14,12 @@ def get_recipe_details(recipe_id, user_ID):
     :return: context that contains recipe informations 'recipe', 'ingredients','tags','categories', 'userIsCreator',
     'isPublic'
     """
-    recipe = get_object_or_404(Recipe, pk=recipe_id, visible=True)
+    # superuser can see hidden recipes.
+    if is_superuser:
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+    else:
+        recipe = get_object_or_404(Recipe, pk=recipe_id, visible=True)
+
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
@@ -58,14 +63,16 @@ def get_recipe_list(request, active_filters=None):
     :param active_filters: 
     :return: queryset of recipes, queryset of available filters, queryset of selected filters
     """
-
-    # get all public recipes
-    public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
-    # get all user recipes
-    user_recipes = get_user_recipes(request).values_list('id')
-    # union public and user recipes
-    public_user = public_recipes.union(user_recipes)
-    recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
+    if request.user.is_superuser:
+       recipe_list = Recipe.objects.all().order_by('-published_date')
+    else:
+        # get all public recipes
+        public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
+        # get all user recipes
+        user_recipes = get_user_recipes(request).values_list('id')
+        # union public and user recipes
+        public_user = public_recipes.union(user_recipes)
+        recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
 
     # initialize selected filters to prevent errors.
     selected_filters = Category.objects.none()
@@ -99,7 +106,7 @@ def create_new_recipe(request):
     """
     Function that creates a new recipe.
     :param request: 
-    :return: 
+    :return: id of new recipe
     """
     creator_ID = request.user.id
 
@@ -151,6 +158,11 @@ def create_new_recipe(request):
 
 
 def hide_recipe(recipe_id):
+    """
+    Function to set a recipe invisible to all users.
+    :param recipe_id: 
+    :return: 
+    """
     try:
         recipe = Recipe.objects.get(id=recipe_id)
         recipe.visible = False

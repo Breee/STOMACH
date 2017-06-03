@@ -1,6 +1,7 @@
 from django.contrib import admin
 from recipe.models import *
 from storage.models import *
+
 class IngredientInline(admin.TabularInline):
     model = Ing_Recipe
 

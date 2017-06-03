@@ -1,14 +1,22 @@
 {% extends 'html/base.html' %}
 
 {% load staticfiles %}
+
+{% block title %}Recipes{% endblock title %}
+{% block nav-style %}{% endblock nav-style %}
+
 {% block content %}
 
 
 
     {% if success %}
+        <div class="col-sm-10 text-center">
+            <div class="alert alert-success" role="alert">{{ success }}</div>
+            <a href="{% url 'recipe_new' %}" class="btn btn-info" role="button">Add another recipe</a>
+            <a href="{% url 'recipes_list' %}" class="btn btn-info" role="button">Go to recipe overview</a>
+            <a href="{% url 'recipe_detail' recipe_id=id %}" class="btn btn-info" role="button">Show me my new recipe</a>
 
-        <div class="alert alert-success" role="alert">{{ success }}</div>
-        <a href="{% url 'recipe_new' %}" class="btn btn-info" role="button">Add another recipe</a>
+        </div>
 
     {% else %}
 

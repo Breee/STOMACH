@@ -51,7 +51,7 @@ def filter_recipes(request):
 
 
 def recipe_detail(request, recipe_id):
-    context = DBUtils.get_recipe_details(recipe_id, request.user.id)
+    context = DBUtils.get_recipe_details(recipe_id, request.user.id,request.user.is_superuser)
     if context is None:
         return not_authorized()
 
@@ -71,9 +71,9 @@ def recipes_user(request):
 
 def recipe_new(request):
     if request.method == "POST":
-        DBUtils.create_new_recipe(request)
+        recipe_id = DBUtils.create_new_recipe(request)
         message = "Thanks, new recipe added"
-        context = {'success': message}
+        context = {'success': message, 'id':recipe_id}
         return render(request,
                       'html/recipe/recipe_edit.html',
                       context)
@@ -91,11 +91,11 @@ def recipe_new(request):
                           context)
         else:
             message = "Only logged in users can create new recipes."
-            return recipes_list(request, message, None)
+            return recipes_list(request, message)
 
 
 def recipe_edit(request, recipe_id):
-    recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id)
+    recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id,request.user.is_superuser)
     if recipecontext == None or recipecontext['userIsCreator'] == False:
         return not_authorized()
 
@@ -106,9 +106,9 @@ def recipe_edit(request, recipe_id):
 
     if request.method == "POST":
         DBUtils.hide_recipe(recipe_id)
-        DBUtils.create_new_recipe(request)
+        newID = DBUtils.create_new_recipe(request)
         message = "Thanks, your recipe was edited"
-        context = {'success': message}
+        context = {'success': message, 'id':newID}
 
         return render(request,
                       'html/recipe/recipe_edit.html',
