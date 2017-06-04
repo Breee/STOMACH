@@ -18,9 +18,9 @@ class IngredientForm(forms.Form):
     name = forms.CharField(max_length=200,
                            widget=forms.TextInput(attrs={
                                'placeholder': 'ingredient name'
-                           }), required=False)
-    amount = forms.IntegerField(min_value=0,required=False)
-    unit = forms.ModelChoiceField(queryset=Unit.objects.all(),empty_label=None)
+                           }), required=True, empty_value='')
+    amount = forms.IntegerField(min_value=0, required=True)
+    unit = forms.ModelChoiceField(queryset=Unit.objects.all(),empty_label=None, required=True)
 
 class CategoryForm(forms.Form):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), empty_label=None)

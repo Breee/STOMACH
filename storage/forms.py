@@ -6,4 +6,4 @@ class StorageForm(forms.ModelForm):
 
     class Meta:
         model = Storage
-        exclude = ('user_ID',)
+        exclude = ('user_ID','visible')

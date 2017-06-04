@@ -26,7 +26,7 @@
             <h1>New Recipe</h1>
         {% endif %}
 
-        <form method="POST" class="post-form">{% csrf_token %}
+        <form method="POST" class="post-form" onsubmit="return validateIngredientForm()">{% csrf_token %}
 
             <div class="panel panel-default formsetContainer">
                 <div class="panel-heading"> General:</div>

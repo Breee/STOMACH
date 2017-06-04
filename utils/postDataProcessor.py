@@ -27,7 +27,8 @@ def clean_recipe_post_data(request):
             matches = matcher.findall(key)
             ID = matches[0][0]
             name = matches[0][1]
-            print(matches)
+            if name == '':
+                continue
             if name == 'category':
                 categories.add(value[0])
             else:
@@ -38,4 +39,3 @@ def clean_recipe_post_data(request):
     result['categories'] = categories
     print(result)
     return result
-

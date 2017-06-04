@@ -113,13 +113,18 @@ def recipe_edit(request, recipe_id):
         ingredientFormSet = formset_factory(IngredientForm, extra=0)
         categoryFormSet = formset_factory(CategoryForm, extra=0)
 
+        # fill recipe form.
         filled_recipe = RecipeForm(
                 initial={
                     'name': recipe.name, 'description': recipe.description, 'cook_time': recipe.cook_time,
                     'person_amount': recipe.person_amount, 'public': public
                     })
+
+        # fill ingredient forms.
         filled_ing = ingredientFormSet(
                 initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients])
+
+        # fill category forms.
         filled_categories = categoryFormSet(initial=[{'category': x.category_ID} for x in categories])
 
         context = {
