@@ -4,21 +4,28 @@
 {% block content %}
 
     {% if success %}
-
-        <div class="alert alert-success" role="alert">{{ success }}</div>
-        <a href="{% url 'storage_new' %}" class="btn btn-info" role="button">add another storage</a>
+        <div class="col-sm-10 text-center">
+            <div class="alert alert-success" role="alert">{{ success }}</div>
+            <a href="{% url 'storage_new' %}" class="btn btn-info" role="button">Add another storage</a>
+            <a href="{% url 'user_storage' %}" class="btn btn-info" role="button">Go to storage overview</a>
+            <a href="{% url 'storage_detail' storage_id=id %}" class="btn btn-info" role="button">Show me my new storage</a>
+        </div>
 
     {% else %}
 
-    <h1>New Storage</h1>
+        {% if edit %}
+            <h1>Edit Storage</h1>
+        {% else %}
+            <h1>New Storage</h1>
+        {% endif %}
 
-    <form method="POST" class="post-form">{% csrf_token %}
+    <form method="POST" class="post-form" onsubmit="return validateIngredientForm()">{% csrf_token %}
 
         <div class="panel panel-default formsetContainer">
             <div class="panel-heading"> General:</div>
             <div class="panel-body">
                 <table>
-                    {{ form.as_table }}
+                    {{ storage_form.as_table }}
                 </table>
             </div>
         </div>
@@ -26,12 +33,12 @@
         <div class="panel panel-default formsetContainer">
             <div class="panel-heading"> Ingredients:</div>
             <div class="panel-body">
-                {% for form in ingredientFormset %}
+                {% for form in ingredient_formset %}
                     <div class="ingredient-formset formsetSubelement formset">
                         {{ form.as_p }}
                     </div>
                 {% endfor %}
-             {{ ingredientFormset.management_form }}
+             {{ ingredient_formset.management_form }}
             </div>
         </div>
 

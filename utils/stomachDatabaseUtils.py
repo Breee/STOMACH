@@ -6,12 +6,13 @@ from storage.models import *
 from django.db.models import Count
 
 
-def get_recipe_details(recipe_id, user_ID, is_superuser):
+def get_recipe_details(recipe_id, user_id, is_superuser):
     """
     Function that gets a recipes details.
     :param recipe_id: 
-    :param user_ID: 
-    :return: context that contains recipe informations 'recipe', 'ingredients','tags','categories', 'userIsCreator',
+    :param user_id: 
+    :param is_superuser:
+    :return: context that contains recipe information 'recipe', 'ingredients','tags','categories', 'userIsCreator',
     'isPublic'
     """
     # superuser can see hidden recipes.
@@ -23,26 +24,21 @@ def get_recipe_details(recipe_id, user_ID, is_superuser):
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
+    recipe_is_public = False
+
     # check if user is the creator or admin of the recipe in order to enable an edit function.
     if is_superuser:
         user_can_edit = True
     else:
-        try:
-            Creator_Recipe.objects.get(recipe_ID=recipe_id, creator_ID=user_ID)
-            user_can_edit = True
-        except:
-            user_can_edit = False
+        get_object_or_404(Creator_Recipe, recipe_ID=recipe_id, creator_ID=user_id)
+        user_can_edit = True
+        recipe_is_public = get_object_or_404(Creator_Recipe, recipe_ID=recipe_id).public
 
-    try:
-        recipe_is_public = Creator_Recipe.objects.get(recipe_ID=recipe_id).public
-    except:
-        raise KeyError("recipe with id: " + recipe_id + " does not exist.")
-
-    if (user_can_edit) or (not user_can_edit and recipe_is_public):
+    if user_can_edit or (not user_can_edit and recipe_is_public):
         context = {
             'recipe':        recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
             'user_can_edit': user_can_edit, 'recipe_is_public': recipe_is_public
-            }
+        }
     else:
         context = None
     return context
@@ -54,27 +50,29 @@ def get_user_recipes(request):
     :param request: 
     :return: Queryset that contains Recipe objects.
     """
-    print(request.user.id)
-    userRecipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
-    recipes = Recipe.objects.filter(pk__in=userRecipes, visible=True)
+    user_recipes = Creator_Recipe.objects.filter(creator_ID=request.user.id).values_list('recipe_ID')
+    recipes = Recipe.objects.filter(pk__in=user_recipes, visible=True)
     return recipes
 
 
 def get_recipe_list(request, active_filters=None, user_recipe=False):
     """
     Function that returns a list of recipes, filters and selected filters.
-    :param request: 
-    :param active_filters: 
+    :param request: request
+    :param active_filters: list of active filters
+    :param user_recipe: boolean if you want to fetch user-only recipes
     :return: queryset of recipes, queryset of available filters, queryset of selected filters
     """
+    # superusers can see all recipes
+    # TODO: not sure if you want to see all recipes, as you could already see them in the admin panel.
     if request.user.is_superuser:
-       recipe_list = Recipe.objects.all().order_by('-published_date')
+        recipe_list = Recipe.objects.all().order_by('-published_date')
     else:
+
         # get all public recipes
         public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
         # get all user recipes
         user_recipes = get_user_recipes(request).values_list('id')
-        print(user_recipes)
 
         # differ between user and public recipes view
         if user_recipe:
@@ -118,24 +116,24 @@ def create_new_recipe(request):
     :param request: 
     :return: id of new recipe
     """
-    creator_ID = request.user.id
+    creator_id = request.user.id
 
     # process post request data
-    cleanedData = PostProcessor.clean_recipe_post_data(request)
+    cleaned_data = PostProcessor.clean_post_data(request)
 
     # create new recipe
-    newRecipe = Recipe.objects.create(name=cleanedData['name'], description=cleanedData['description'],
-                                      cook_time=cleanedData['cook_time'],
-                                      person_amount=cleanedData['person_amount'])
-    newRecipe.publish()
+    new_recipe = Recipe.objects.create(name=cleaned_data['name'], description=cleaned_data['description'],
+                                       cook_time=cleaned_data['cook_time'],
+                                       person_amount=cleaned_data['person_amount'])
+    new_recipe.publish()
 
     # create Creator_Recipe relation
-    Creator_Recipe.objects.create(recipe_ID_id=newRecipe.id, creator_ID_id=creator_ID, public=cleanedData['public'])
+    Creator_Recipe.objects.create(recipe_ID_id=new_recipe.id, creator_ID_id=creator_id, public=cleaned_data['public'])
 
     # create new ingredients + ing_recipe relations
     # also add a tag for each ingredient's name.
-    for id, value in cleanedData['ingredients'].items():
-        print(id,value)
+    for ing_id, value in cleaned_data['ingredients'].items():
+        print(ing_id, value)
         # ingredient name + unit + amount
         name = value['name']
         unit = value['unit']
@@ -143,28 +141,25 @@ def create_new_recipe(request):
 
         # new ingredient
         if Ingredient.objects.all().filter(name=name).count() == 0:
-            newIngredient = Ingredient.objects.create(name=name)
+            new_ingredient = Ingredient.objects.create(name=name)
         else:
-            newIngredient = Ingredient.objects.all().get(name=name)
+            new_ingredient = Ingredient.objects.all().get(name=name)
 
         # new ing_recipe relation
-        Ing_Recipe.objects.create(unit=Unit.objects.get(id=unit), amount=amount, recipe_ID_id=newRecipe.id,
-                                  ing_ID_id=newIngredient.id)
+        Ing_Recipe.objects.create(unit=Unit.objects.get(id=unit), amount=amount, recipe_ID_id=new_recipe.id,
+                                  ing_ID_id=new_ingredient.id)
 
         # new tag where the name equals the name of the ingredient.
-        newTag = Tag.objects.create(name=name)
+        new_tag = Tag.objects.create(name=name)
 
         # new tag_recipe relation
-        Tag_Recipe.objects.create(recipe_ID_id=newRecipe.id, tag_ID_id=newTag.id)
+        Tag_Recipe.objects.create(recipe_ID_id=new_recipe.id, tag_ID_id=new_tag.id)
 
     # create category_Recipe relation
-    for id in cleanedData['categories']:
-        try:
-            Category_Recipe.objects.create(recipe_ID_id=newRecipe.id, category_ID_id=id)
-        except:
-            print("No categories set")
+    for cat_id in cleaned_data['categories']:
+        Category_Recipe.objects.create(recipe_ID_id=new_recipe.id, category_ID_id=cat_id)
 
-    return newRecipe.id
+    return new_recipe.id
 
 
 def hide_recipe(recipe_id):
@@ -173,12 +168,9 @@ def hide_recipe(recipe_id):
     :param recipe_id: 
     :return: 
     """
-    try:
-        recipe = Recipe.objects.get(id=recipe_id)
-        recipe.visible = False
-        recipe.save()
-    except:
-        raise ValueError("recipe with id %d does not exist" % recipe_id)
+    recipe = get_object_or_404(Recipe, pk=recipe_id)
+    recipe.visible = False
+    recipe.save()
 
 
 def create_unit(name, short, language):
@@ -198,16 +190,16 @@ def delete_all_categories():
 
 
 def create_new_storage(request):
-    creator_ID = request.user.id
+    creator_id = request.user.id
 
     # process post request data
-    cleanedData = PostProcessor.clean_recipe_post_data(request)
+    cleaned_data = PostProcessor.clean_post_data(request)
 
     # create new storage
-    newStorage = Storage.objects.create(name=cleanedData['name'], user_ID_id=creator_ID)
+    new_storage = Storage.objects.create(name=cleaned_data['name'], user_ID_id=creator_id)
 
     # create new ingredients and Storage_Ingredient relations
-    for id, value in cleanedData['ingredients'].items():
+    for ing_id, value in cleaned_data['ingredients'].items():
         # ingredient name + unit + amount
         name = value['name']
         unit = value['unit']
@@ -215,24 +207,44 @@ def create_new_storage(request):
 
         # new ingredient
         if Ingredient.objects.all().filter(name=name).count() == 0:
-            newIngredient = Ingredient.objects.create(name=name)
+            new_ingredient = Ingredient.objects.create(name=name)
         else:
-            newIngredient = Ingredient.objects.all().get(name=name)
+            new_ingredient = Ingredient.objects.all().get(name=name)
 
         # new Storage_Ingredient relation
-        Storage_Ingredient.objects.create(unit=Unit.objects.get(id=unit), amount=amount, ing_ID_id=newIngredient.id,
-                                          storage_ID_id=newStorage.id)
+        Storage_Ingredient.objects.create(unit=Unit.objects.get(id=unit), amount=amount, ing_ID_id=new_ingredient.id,
+                                          storage_ID_id=new_storage.id)
 
-    return newStorage.id
+    return new_storage.id
 
 
 def hide_storage(storage_id):
-    try:
-        storage = Storage.objects.get(id=storage_id)
-        storage.visible = False
-        storage.save()
-    except:
-        raise ValueError("storage with id %d does not exist" % storage_id)
+    storage = get_object_or_404(Storage, pk=storage_id)
+    storage.visible = False
+    storage.save()
+
+
+def get_storage_details(storage_id, user_id, is_superuser):
+    """
+    Function that returns details of a storage.
+    :param storage_id: 
+    :param user_id: 
+    :param is_superuser: 
+    :return: map which contains information about the storage and ingredients.
+    """
+    # superuser can see hidden recipes.
+    if is_superuser:
+        storage = get_object_or_404(Storage, pk=storage_id, user_ID=user_id)
+    else:
+        storage = get_object_or_404(Storage, pk=storage_id, user_ID=user_id, visible=True)
+
+    ingredients = Storage_Ingredient.objects.all().filter(storage_ID=storage_id)
+
+    context = {
+        'storage': storage, 'ingredients': ingredients,
+    }
+
+    return context
 
 
 """
