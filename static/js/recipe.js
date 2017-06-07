@@ -17,13 +17,13 @@ $(document).ready(function () {
 function validateIngredientForm() {
     var noErrors = true;
     var inputs = $('.ingredient-formset :input');
-        inputs.each(function (e) {
-            var elem = $("#" + this.id);
-             if(!elem.val()){
-                 elem.attr('required','');
-                 noErrors = false;
-             }
-        });
+    inputs.each(function (e) {
+        var elem = $("#" + this.id);
+        if (!elem.val()) {
+            elem.attr('required', '');
+            noErrors = false;
+        }
+    });
     return noErrors;
 }
 

@@ -43,21 +43,19 @@
     </div>
     <hr>
     <div class="container">
-        <h2 >Cook time:</h2>
+        <h2 >Cook time in minutes:</h2>
         <p>
             {{ recipe.cook_time }}
         </p>
     </div>
     <hr>
-    <div class="mkt-s2 container">
-        <h2 class="mkt-s2-h">Categories:</h2>
-        <div class="mkt-s2-body">
-            <ul>
+    <div class="container">
+        <h2>Categories:</h2>
+            <ul class="categories">
                 {% for category in categories %}
-                    <li><b>{{ category.category_ID.name }}</b></li>
+                    <li><a class=" categories-item btn  btn-sm btn-info" href="{% url 'recipes_list' %}?filter={{ category.category_ID.id }}"><b>{{ category.category_ID.name }}</b></a></li>
                 {% endfor %}
             </ul>
-        </div>
     </div>
     <hr>
     <div class="mkt-s2 container">
