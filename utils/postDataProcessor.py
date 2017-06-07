@@ -55,7 +55,7 @@ def clean_post_data(request):
     categories = set()
     # regex matcher with 2 groups, where (\d+) is an ID and (.*) a field name.
     # e.g. a match on form-1-name would deliver the groups 1,name.
-    matcher = re.compile(r'form-(\d+)-(.*)')
+    matcher = re.compile(r'(?:category|ingredient)-(\d+)-(.*)')
     for key,value in dataDict.items():
         if key == 'name':
             result['name'] = value[0]

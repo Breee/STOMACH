@@ -37,6 +37,7 @@
                 </div>
             </div>
 
+            {{ ingredient_formset.management_form }}
             <div class="panel panel-default formsetContainer">
                 <div class="panel-heading"> Ingredients:</div>
                 <div class="panel-body">
@@ -45,7 +46,6 @@
                             {{ form.as_p }}
                         </div>
                     {% endfor %}
-                    {{ ingredient_formset.management_form }}
                 </div>
             </div>
 

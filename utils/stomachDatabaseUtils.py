@@ -24,7 +24,6 @@ def get_recipe_details(recipe_id, user_id, is_superuser):
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
-    recipe_is_public = False
 
     # check if user is the creator or admin of the recipe in order to enable an edit function.
     if is_superuser:
@@ -32,13 +31,14 @@ def get_recipe_details(recipe_id, user_id, is_superuser):
     else:
         get_object_or_404(Creator_Recipe, recipe_ID=recipe_id, creator_ID=user_id)
         user_can_edit = True
-        recipe_is_public = get_object_or_404(Creator_Recipe, recipe_ID=recipe_id).public
+
+    recipe_is_public = get_object_or_404(Creator_Recipe, recipe_ID=recipe_id).public
 
     if user_can_edit or (not user_can_edit and recipe_is_public):
         context = {
             'recipe':        recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
             'user_can_edit': user_can_edit, 'recipe_is_public': recipe_is_public
-        }
+            }
     else:
         context = None
     return context

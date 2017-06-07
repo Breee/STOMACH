@@ -5,12 +5,14 @@ $(document).ready(function () {
 
     $('.ingredient-formset').formset({
         addText: '<button class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Add ingredient</button>',
-        deleteText: '<span class="btn btn-info btn-xs"><span class="glyphicon glyphicon-trash"></span> Remove</span>'
+        deleteText: '<span class="btn btn-info btn-xs"><span class="glyphicon glyphicon-trash"></span> Remove</span>',
+        prefix : 'ingredient'
     });
 
     $('.category-formset').formset({
         addText: '<button class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Add category</button>',
         deleteText: '<span class="btn btn-info btn-xs"><span class="glyphicon glyphicon-trash"></span> Remove</span>',
+        prefix : 'category'
     });
 });
 

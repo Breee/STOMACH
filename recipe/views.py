@@ -76,8 +76,13 @@ def recipe_new(request):
     else:
         if request.user.is_authenticated:
             recipeForm = RecipeForm()
+
             ingredientFormSet = formset_factory(IngredientForm, extra=1)
+            ingredientFormSet  = ingredientFormSet(prefix='ingredient')
+
             categoryFormSet = formset_factory(CategoryForm, extra=1)
+            categoryFormSet = categoryFormSet(prefix='category')
+
             context = {
                 'recipe_formset': recipeForm, 'ingredient_formset': ingredientFormSet, 'category_formset': categoryFormSet,
                 'edit': False
@@ -122,10 +127,10 @@ def recipe_edit(request, recipe_id):
 
         # fill ingredient forms.
         filled_ing = ingredientFormSet(
-                initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients])
+                initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients],prefix='ingredient')
 
         # fill category forms.
-        filled_categories = categoryFormSet(initial=[{'category': x.category_ID} for x in categories])
+        filled_categories = categoryFormSet(initial=[{'category': x.category_ID} for x in categories],prefix='category')
 
         context = {
             'recipe_formset': filled_recipe, 'ingredient_formset': filled_ing, 'category_formset': filled_categories,
