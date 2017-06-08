@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^logout/', auth_views.logout,
         {'next_page': '/recipes'},
         name='logout'),
+    url(r'^signup/', include('signup.urls')),
     url(r'^recipes/', include('recipe.urls')),
     url(r'^storage/', include('storage.urls')),
     url(r'^admin/', admin.site.urls),

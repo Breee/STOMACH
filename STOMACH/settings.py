@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'recipe.apps.RecipeConfig',
     'storage.apps.StorageConfig',
     'account.apps.AccountConfig',
+    'signup.apps.SignupConfig',
 ]
 
 MIDDLEWARE = [
