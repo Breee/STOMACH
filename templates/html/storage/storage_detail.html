@@ -7,32 +7,31 @@
 {% block content %}
 
     {# Hero Section #}
-    <div class="mkt-s1">
-        <div class="mkt-s1-body container ">
+        <div class="container ">
             <div class="row">
-                <h1 class="col-md-8">{{ storage.name }}</h1>
+                <h1>{{ storage.name }}</h1>
             </div>
         </div>
-    </div>
 
     {# Main Section #}
-    <div class="mkt-s2 container">
-        <h2 class="mkt-s2-h">Ingredients:</h2>
-        <div class="mkt-s2-body">
-            <ul>
-                {% for ingredient in ingredients %}
-                    <li>
-                        <b>
-                            {{ ingredient.amount }}
-                            {% if ingredient.unit.short != "-" %}
-                                {{ ingredient.unit }}
-                            {% endif %}
-                        </b>
-                        {{ ingredient.ing_ID.name }}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="container">
+        <h2>Ingredients:</h2>
+        <table class="table table-bordered table-striped table-hover table-responsive">
+            <thead>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Unit</th>
+            </thead>
+            <tbody>
+            {% for ingredient in ingredients %}
+                <tr>
+                <td>{{ ingredient.ing_ID.name }} </td>
+                <td>{{ ingredient.amount }}</td>
+                    <td><b> {{ ingredient.unit }} </b></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     <div class="container">
