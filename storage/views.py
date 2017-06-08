@@ -13,9 +13,9 @@ from .forms import *
 
 def storage_new(request):
     if request.method == "POST":
-        DBUtils.create_new_storage(request)
+        storage_id = DBUtils.create_new_storage(request)
         message = "Thanks, new storage added"
-        context = {'success': message}
+        context = {'success': message, 'id' : storage_id}
         return render(request,
                       'html/storage/storage_new.html',
                       context)
@@ -23,6 +23,7 @@ def storage_new(request):
         if request.user.is_authenticated:
             storage_form = StorageForm()
             ingredient_formset = formset_factory(IngredientForm)
+            ingredient_formset = ingredient_formset(prefix='ingredient')
             context = {
                 'storage_form': storage_form, 'ingredient_formset': ingredient_formset,
                 'edit': False
@@ -61,7 +62,7 @@ def storage_edit(request, storage_id):
 
         # fill ingredient forms.
         filled_ing = ingredient_formset(
-            initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients])
+            initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients],prefix='ingredient')
 
 
         context = {
