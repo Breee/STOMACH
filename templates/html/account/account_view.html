@@ -1,0 +1,21 @@
+{% extends 'html/base.html' %}
+
+{% load staticfiles %}
+{% block content %}
+
+    <form method="POST" class="post-form">{% csrf_token %}
+
+        <div class="panel panel-default formsetContainer">
+            <div class="panel-heading"> General:</div>
+            <div class="panel-body">
+                <table>
+                    {{ mysettings.as_table }}
+                </table>
+            </div>
+        </div>
+
+        <button type="submit" class="save btn btn-default">Save</button>
+
+    </form>
+
+{% endblock %}
