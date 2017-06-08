@@ -18,6 +18,9 @@ class RecipeForm(forms.ModelForm):
     class Meta:
         model = Recipe
         fields = ('name', 'cook_time', 'person_amount')
+        labels = {
+            'cook_time' : 'Cook time in minutes'
+        }
 
 class IngredientForm(forms.Form):
     name = forms.CharField(max_length=200,
