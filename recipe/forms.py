@@ -10,6 +10,11 @@ class RecipeForm(forms.ModelForm):
                            }), required=False)
     public =  forms.BooleanField(widget=forms.CheckboxInput,required=False)
 
+    def __init__(self, *args, **kwargs):
+        super(RecipeForm, self).__init__(*args, **kwargs)
+        self.fields['cook_time'].widget.attrs['min'] = 1
+        self.fields['person_amount'].widget.attrs['min'] = 1
+
     class Meta:
         model = Recipe
         fields = ('name', 'cook_time', 'person_amount')

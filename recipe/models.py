@@ -49,7 +49,7 @@ class Recipe(models.Model):
     # description of the recipe (how to cook xxx..)
     description = models.CharField(max_length=1000)
     # time to prepare/cook the recipe.
-    cook_time = models.PositiveIntegerField(default=0)
+    cook_time = models.PositiveIntegerField(default=1)
     # amount of persons.
     person_amount = models.PositiveIntegerField(default=1)
     # visibility
