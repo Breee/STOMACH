@@ -17,6 +17,7 @@ Requirements are: Python 3 and Pip.
 2. Install the requirements with:
 
 ```pip install -r requirements.txt```
+
 3. Setup the Settings-File:
 
 ```cd STOMACH```
