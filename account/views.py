@@ -17,13 +17,13 @@ def account_form(request):
             newAppSett.save()
             return HttpResponseRedirect(reverse('myaccount'))
     else:
-        username = get_object_or_404(Settings,
-                                     user_id=request.user.id).user.username
-        isActiveStorage = get_object_or_404(Settings,
-                                            user_id=request.user.id).isActiveStorage
-
-        myStorageSettings = AppSettingsForm(initial={'isActiveStorage': isActiveStorage})
+        mySettings = get_object_or_404(Settings, user_id=request.user.id)
+        username = mySettings.user.username
+        isActiveStorage = mySettings.isActiveStorage
+        myStorageSettings = AppSettingsForm(
+            initial={'isActiveStorage': isActiveStorage})
         myUserSettings = UserSettingsForm(initial={'username': username})
 
-        context = {'myUserSettings': myUserSettings, 'myStorageSettings': myStorageSettings}
+        context = {'myUserSettings': myUserSettings,
+                   'myStorageSettings': myStorageSettings}
         return render(request, 'html/account/account_view.html', context)

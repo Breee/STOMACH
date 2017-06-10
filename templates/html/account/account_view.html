@@ -6,6 +6,16 @@
     <form method="POST" class="post-form">{% csrf_token %}
 
         <div class="panel panel-default formsetContainer">
+            <div class="panel-heading"> Account Information:</div>
+            <div class="panel-body">
+                <table width="100%">
+                    <tr>
+                        <td width="15%"><b>Your User-Id:</b></td>
+                        <td width="85%">{{ request.user.id }}</td>
+                    </tr>
+                </table>
+
+            </div>
             <div class="panel-heading"> General:</div>
             <div class="panel-body">
                 <table>

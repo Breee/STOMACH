@@ -75,6 +75,10 @@ def storage_edit(request, storage_id):
 
 
 def storage_list(request):
+    # Disable Storagelist when deactivated
+    if not request.user.settings.isActiveStorage:
+        return HttpResponseRedirect('account')
+
     storage_list = Storage.objects.filter(user_ID=request.user.id, visible=True)
     context = {'storage_list': storage_list}
     return render(request,

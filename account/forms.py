@@ -3,7 +3,7 @@ from .models import *
 
 
 class UserSettingsForm(forms.ModelForm):
-    username = forms.CharField(max_length=25)
+    username = forms.CharField(max_length=25, label='Your Username')
 
     class Meta:
         model = Settings
@@ -14,7 +14,7 @@ class UserSettingsForm(forms.ModelForm):
 
 
 class AppSettingsForm(forms.ModelForm):
-    isActiveStorage = forms.BooleanField(required=False)
+    isActiveStorage = forms.BooleanField(required=False, label='Storage activated')
 
     class Meta:
         model = Settings
