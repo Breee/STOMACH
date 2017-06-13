@@ -1,2 +1,5 @@
 Django>=1.11.1
 pip>=9.0.1
+django-haystack
+pysolr
+elasticsearch>=2.0.0,<3.0.0

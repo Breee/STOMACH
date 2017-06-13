@@ -12,3 +12,8 @@ stomach_src/migrations/__pycache__/
 virtual_env/
 
 *.pyc
+*.cfs
+*.si
+*.lock
+external/elasticsearch-1.7.5/data/
+external/elasticsearch-1.7.5/logs/

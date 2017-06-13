@@ -46,6 +46,7 @@ class Recipe(models.Model):
     # date on which the recipe is created/published.
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True,)
     # description of the recipe (how to cook xxx..)
     description = models.CharField(max_length=1000)
     # time to prepare/cook the recipe.
@@ -75,9 +76,9 @@ class Ingredient(models.Model):
 # class that defines a mapping [ingredient] -> [recipe]
 class Ing_Recipe(models.Model):
     # recipe id
-    recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE)
+    recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE, related_name='recipe_ingredient')
     # ingredient id
-    ing_ID = models.ForeignKey(Ingredient)
+    ing_ID = models.ForeignKey(Ingredient, related_name='ingredient_relation')
     # amount of the ingredient
     amount = models.PositiveIntegerField(default=1)
     # unit of the ingredient
@@ -90,7 +91,7 @@ class Ing_Recipe(models.Model):
 # class that defines a mapping [category] -> [recipe]
 class Category_Recipe(models.Model):
     category_ID = models.ForeignKey(Category)
-    recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE)
+    recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE,related_name='recipe_category')
 
 
 # class that defines a mapping [tag] -> [recipe]

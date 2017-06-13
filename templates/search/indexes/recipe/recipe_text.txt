@@ -1,0 +1,11 @@
+{{ object.name }}
+{{ object.id }}
+{{ object.description }}
+
+{% for ing in object.recipe_ingredient.all %}
+{{ ing.ing_ID.name }}
+{% endfor %}
+
+{% for cat in object.recipe_category.all %}
+{{ cat.category_ID.name }}
+{% endfor %}

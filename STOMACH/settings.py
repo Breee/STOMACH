@@ -37,10 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'haystack',
     'recipe.apps.RecipeConfig',
     'storage.apps.StorageConfig',
     'account.apps.AccountConfig',
     'signup.apps.SignupConfig',
+    'search.apps.StomachsearchConfig',
 ]
 
 MIDDLEWARE = [
@@ -131,3 +133,12 @@ STATICFILES_DIRS = [
 LOGIN_REDIRECT_URL = 'recipes_list'
 LOGIN_URL = '/login'
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

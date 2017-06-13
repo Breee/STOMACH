@@ -17,6 +17,7 @@ def recipes_list(request, message="", user_recipe=False):
     # filters are get requests
     # there are two queries related to filters, ?filter=xxx and ?removefilter=xxx
     # ?filter=xxx will apply a filter and ?removefilter=xxx will remove it.
+
     filters = request.GET.getlist('filter')
     removed_filters = request.GET.getlist('removefilter')
     # remove filters which have been deselected.
@@ -24,6 +25,7 @@ def recipes_list(request, message="", user_recipe=False):
     recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters, user_recipe)
     # build a filter string to preserve applied filters.
     filter_string = build_filter_string(selected_filters)
+
     context = {
         'latest_recipes_list': recipe_list, "message": message, 'filters': filter, 'selected_filters': selected_filters,
         'filter_string': filter_string
@@ -97,6 +99,7 @@ def recipe_new(request):
 
 def recipe_edit(request, recipe_id):
     recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id,request.user.is_superuser)
+
     if recipecontext == None or recipecontext['user_can_edit'] == False:
         return not_authorized()
 

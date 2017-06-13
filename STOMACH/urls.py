@@ -14,5 +14,6 @@ urlpatterns = [
     url(r'^storage/', include('storage.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^account/', include('account.urls')),
+    url(r'^search/', include('haystack.urls')),
     url(r'^', recipe.views.redirect_to_recipes_list),
 ]

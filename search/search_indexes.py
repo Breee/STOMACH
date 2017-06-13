@@ -1,0 +1,15 @@
+import datetime
+from haystack import indexes
+from recipe.models import *
+
+class RecipeIndex(indexes.SearchIndex,indexes.Indexable):
+
+    text = indexes.CharField(document=True,use_template=True)
+    name = indexes.CharField(model_attr='name')
+    description = indexes.CharField(model_attr='description')
+
+    def get_updated_field(self):
+        return "updated_at"
+
+    def get_model(self):
+        return Recipe
