@@ -2,6 +2,7 @@ from django.shortcuts import *
 import utils.postDataProcessor as PostProcessor
 from recipe.initial_data.InitialValueManager import InitialValueManager
 from recipe.models import *
+from recipe.forms import *
 from storage.models import *
 from django.db.models import Count
 
@@ -63,24 +64,25 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     :param user_recipe: boolean if you want to fetch user-only recipes
     :return: queryset of recipes, queryset of available filters, queryset of selected filters
     """
+    form = RecipeSearchForm(request.GET)
+    recipes = form.search()
     # superusers can see all recipes
     # TODO: not sure if you want to see all recipes, as you could already see them in the admin panel.
     if request.user.is_superuser:
-        recipe_list = Recipe.objects.all().order_by('-published_date')
+        recipe_list = recipes.order_by('published_date')
     else:
-
         # get all public recipes
-        public_recipes = Creator_Recipe.objects.filter(public=True).values_list('recipe_ID')
+        public_recipes = recipes.filter(public=True).values_list('rec_id',flat=True)
         # get all user recipes
         user_recipes = get_user_recipes(request).values_list('id')
 
         # differ between user and public recipes view
         if user_recipe:
-            recipe_list = Recipe.objects.filter(pk__in=user_recipes, visible=True).order_by('-published_date')
+            recipe_list = recipes.filter(rec_id__in=user_recipes, visible=True).order_by('published_date')
         else:
             # union public and user recipes
             public_user = public_recipes.union(user_recipes)
-            recipe_list = Recipe.objects.filter(pk__in=public_user, visible=True).order_by('-published_date')
+            recipe_list = recipes.filter(rec_id__in=public_user, visible=True).order_by('published_date')
 
     # initialize selected filters to prevent errors.
     selected_filters = Category.objects.none()
@@ -91,9 +93,9 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
         cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters) \
             .values('recipe_ID') \
             .annotate(count=Count('recipe_ID')) \
-            .filter(count=len(active_filters)).values('recipe_ID')
+            .filter(count=len(active_filters)).values_list('recipe_ID',flat=True)
         # filter recipes by all recipes related to the active filters.
-        recipe_list = recipe_list.filter(pk__in=cat_rec)
+        recipe_list = recipe_list.filter(rec_id__in=cat_rec).order_by('published_date')
         # selected filters is a queryset of categories, where the category id appears in the active_filters
         selected_filters = Category.objects.filter(pk__in=active_filters)
     else:
@@ -101,9 +103,9 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
 
     # filters are determined as follows, we filter by the recipes in the recipe_list, we exclude active filters to
     # prevent duplicates,
-    # we annotate the queryset with a value count, which equals the amount of appeare nces of a category_id.
+    # we annotate the queryset with a value count, which equals the amount of appearences of a category_id.
     # ---> a queryset {(category_id_1,category_id__name_1,count_1),...,(category_id_n,category_id_name_n ,count_n) }
-    available_filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('id')) \
+    available_filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('rec_id',flat=True)) \
         .exclude(category_ID__in=active_filters) \
         .values('category_ID', 'category_ID__name') \
         .annotate(count=Count('category_ID'))

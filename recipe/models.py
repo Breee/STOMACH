@@ -107,7 +107,7 @@ class User_Recipe(models.Model):
 # class that defines a mapping [Creator] -> [recipe]
 class Creator_Recipe(models.Model):
     creator_ID = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE)
+    recipe_ID = models.ForeignKey(Recipe,on_delete=models.CASCADE,related_name='recipe_creator')
     public = models.BooleanField(default=True)
 
 

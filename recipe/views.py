@@ -14,10 +14,11 @@ from .forms import *
 
 
 def recipes_list(request, message="", user_recipe=False):
+
+    query = request.GET.get('q') if request.GET.get('q') is not None else ''
     # filters are get requests
     # there are two queries related to filters, ?filter=xxx and ?removefilter=xxx
     # ?filter=xxx will apply a filter and ?removefilter=xxx will remove it.
-
     filters = request.GET.getlist('filter')
     removed_filters = request.GET.getlist('removefilter')
     # remove filters which have been deselected.
@@ -28,7 +29,7 @@ def recipes_list(request, message="", user_recipe=False):
 
     context = {
         'latest_recipes_list': recipe_list, "message": message, 'filters': filter, 'selected_filters': selected_filters,
-        'filter_string': filter_string
+        'filter_string': filter_string, 'query':query
     }
     return render(request,
                   'html/recipe/recipe_list.html',

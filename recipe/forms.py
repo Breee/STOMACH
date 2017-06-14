@@ -2,6 +2,13 @@ from django import forms
 
 from .models import *
 
+from haystack.forms import FacetedSearchForm
+
+
+class RecipeSearchForm(FacetedSearchForm):
+
+    def no_query_found(self):
+        return self.searchqueryset.all()
 
 class RecipeForm(forms.ModelForm):
     description = forms.CharField(max_length=1000,
