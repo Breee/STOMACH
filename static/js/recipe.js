@@ -48,14 +48,18 @@ var delay = (function () {
 })();
 
 function getRecipesAndFilters() {
-    var query = $('#searchbar').val();
-    if(lastQuery.trim() != query.trim()){
+    var query = $('#searchbar').val().trim();
+    // compare trimmed queries because such that "flour" and "  flour    " is equal.
+    if (lastQuery != query) {
         lastQuery = query;
-    $.get('/recipes/', {'q': $('#searchbar').val(), 'initialized': 1, 'filter': getSelectedFilters()}, function (data) {
-        var query = $('#searchbar').val();
-        prepareRecipeList(data.latest_recipes_list);
-        prepareFilters(data.filters, data.selected_filters);
-    });
+        $.get('/recipes/', {
+            'q': query,
+            'initialized': 1,
+            'filter': getSelectedFilters()
+        }, function (data) {
+            prepareRecipeList(data.latest_recipes_list);
+            prepareFilters(data.filters, data.selected_filters);
+        });
     }
 }
 
