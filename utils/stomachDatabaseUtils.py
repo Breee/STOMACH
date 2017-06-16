@@ -72,7 +72,7 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
         recipe_list = recipes.order_by('published_date')
     else:
         # get all public recipes
-        public_recipes = recipes.filter(public=True).values_list('rec_id',flat=True)
+        public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)
         # get all user recipes
         user_recipes = get_user_recipes(request).values_list('id')
 
@@ -93,7 +93,7 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
         cat_rec = Category_Recipe.objects.filter(category_ID__in=active_filters) \
             .values('recipe_ID') \
             .annotate(count=Count('recipe_ID')) \
-            .filter(count=len(active_filters)).values_list('recipe_ID',flat=True)
+            .filter(count=len(active_filters)).values_list('recipe_ID', flat=True)
         # filter recipes by all recipes related to the active filters.
         recipe_list = recipe_list.filter(rec_id__in=cat_rec).order_by('published_date')
         # selected filters is a queryset of categories, where the category id appears in the active_filters
@@ -105,7 +105,7 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     # prevent duplicates,
     # we annotate the queryset with a value count, which equals the amount of appearences of a category_id.
     # ---> a queryset {(category_id_1,category_id__name_1,count_1),...,(category_id_n,category_id_name_n ,count_n) }
-    available_filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('rec_id',flat=True)) \
+    available_filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('rec_id', flat=True)) \
         .exclude(category_ID__in=active_filters) \
         .values('category_ID', 'category_ID__name') \
         .annotate(count=Count('category_ID'))
@@ -244,7 +244,7 @@ def get_storage_details(storage_id, user_id, is_superuser):
 
     context = {
         'storage': storage, 'ingredients': ingredients,
-    }
+        }
 
     return context
 

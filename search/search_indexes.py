@@ -2,9 +2,9 @@ import datetime
 from haystack import indexes
 from recipe.models import *
 
-class RecipeIndex(indexes.SearchIndex,indexes.Indexable):
 
-    text = indexes.CharField(document=True,use_template=True)
+class RecipeIndex(indexes.SearchIndex, indexes.Indexable):
+    text = indexes.CharField(document=True, use_template=True)
     name = indexes.CharField(model_attr='name')
     rec_id = indexes.IntegerField(model_attr='pk')
     description = indexes.CharField(model_attr='description')

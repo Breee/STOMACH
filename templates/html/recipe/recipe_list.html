@@ -19,28 +19,26 @@
                 <span href="#" class="list-group-item active recipefilter-header">
                 Filters
                 </span>
-                {% if selected_filters %}
-                    {% for filter in selected_filters %}
-                        <a href="{% url 'recipes_list' %}{{ filter_string }}&amp;removefilter={{ filter.id }}&amp;q={{ query }}"
-                           class="list-group-item recipefilter selected-filter" id="{{ filter.id }}">
-                            {{ filter.name }}
-                        </a>
-                    {% endfor %}
-                {% endif %}
 
-                {% if filters %}
-                    {% for filter in filters %}
-                        <a
-                                {% if filter_string != '' %}
-                                    href="{% url 'recipes_list' %}{{ filter_string }}&amp;filter={{ filter.category_ID }}&amp;q={{ query }}"
-                                {% else %}
-                                    href="{% url 'recipes_list' %}?filter={{ filter.category_ID }}&amp;q={{ query }}"
-                                {% endif %}
-                                    class=" list-group-item recipefilter" id="{{ filter.category_ID }}">
-                            {{ filter.category_ID__name }} <span class="badge">{{ filter.count }}</span>
-                        </a>
-                    {% endfor %}
-                {% endif %}
+                <div class="list-group filters-content">
+                    {% if selected_filters %}
+                        {% for filter in selected_filters %}
+                            <a class="list-group-item recipefilter selected-filter" id="{{ filter.id }}">
+                                {{ filter.name }}
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% if filters %}
+                        {% for filter in filters %}
+                            <a
+                                        class=" list-group-item recipefilter" id="{{ filter.category_ID }}">
+                                {{ filter.category_ID__name }} <span class="badge">{{ filter.count }}</span>
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
             </div>
 
         </div>
@@ -48,13 +46,13 @@
         <div class="col-sm-10 text-left">
             <h2>Recipes:</h2>
             <hr>
-            <form type="get" action=".">
-                <input type="text" name="q" value="{{ query }}">
+            <form type="get" action="." id="searchform">
+                <input id="searchbar" type="text" name="q" value="{{ query }}">
                 <button type="submit">Search</button>
             </form>
             <hr>
             {% if latest_recipes_list %}
-                <ul>
+                <ul id="recipe-list">
                     {% for recipe in latest_recipes_list %}
                         <li><a href="{% url 'recipe_detail' recipe.rec_id %}">{{ recipe.name }}
                             (Published: {{ recipe.published_date }} {% if user.is_superuser %}

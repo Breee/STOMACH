@@ -108,6 +108,10 @@ textarea#id_description {
     font-weight: bold;
 }
 
+.recipefilter {
+    cursor: pointer;
+}
+
 .categories {
     list-style-type: none;
     margin: 0;

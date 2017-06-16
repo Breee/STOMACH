@@ -1,10 +1,13 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.shortcuts import *
-
 import utils.stomachDatabaseUtils as DBUtils
 from .forms import *
-
+from django.db.models.query import QuerySet
+from haystack.query import SearchQuerySet
+import json
+from django.http import JsonResponse
+from utils.CustomDjangoJSONEncoder import CustomDjangoJSONEncoder
 
 """
 #########################################################
@@ -14,8 +17,8 @@ from .forms import *
 
 
 def recipes_list(request, message="", user_recipe=False):
-
     query = request.GET.get('q') if request.GET.get('q') is not None else ''
+    initialized = True if request.GET.get('initialized') == '1' else False
     # filters are get requests
     # there are two queries related to filters, ?filter=xxx and ?removefilter=xxx
     # ?filter=xxx will apply a filter and ?removefilter=xxx will remove it.
@@ -23,17 +26,32 @@ def recipes_list(request, message="", user_recipe=False):
     removed_filters = request.GET.getlist('removefilter')
     # remove filters which have been deselected.
     filters = [x for x in filters if x not in removed_filters]
-    recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters, user_recipe)
+    recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters,
+                                                                    user_recipe)
     # build a filter string to preserve applied filters.
     filter_string = build_filter_string(selected_filters)
 
     context = {
         'latest_recipes_list': recipe_list, "message": message, 'filters': filter, 'selected_filters': selected_filters,
-        'filter_string': filter_string, 'query':query
-    }
-    return render(request,
-                  'html/recipe/recipe_list.html',
-                  context)
+        'filter_string':       filter_string, 'query': query
+        }
+
+    if initialized:
+        for key, value in context.items():
+            print("key: %s : value: %s" % (key, value))
+            if isinstance(value, QuerySet):
+                context[key] = json.dumps(list(value), cls=CustomDjangoJSONEncoder, default=lambda o: o.__dict__,
+                                          sort_keys=True, indent=4)
+            elif isinstance(value, SearchQuerySet):
+                context[key] = json.dumps(list(map(lambda x: x.get_stored_fields(), value)),
+                                          cls=CustomDjangoJSONEncoder)
+            else:
+                context[key] = json.dumps(value, cls=CustomDjangoJSONEncoder)
+        return JsonResponse(context)
+    else:
+        return render(request,
+                      'html/recipe/recipe_list.html',
+                      context)
 
 
 def build_filter_string(selected_filters):
@@ -55,7 +73,7 @@ def build_filter_string(selected_filters):
 
 
 def recipe_detail(request, recipe_id):
-    context = DBUtils.get_recipe_details(recipe_id, request.user.id,request.user.is_superuser)
+    context = DBUtils.get_recipe_details(recipe_id, request.user.id, request.user.is_superuser)
     if context is None:
         return not_authorized()
 
@@ -66,13 +84,14 @@ def recipe_detail(request, recipe_id):
 
 @login_required
 def recipes_user(request):
-    return recipes_list(request,"",user_recipe=True)
+    return recipes_list(request, "", user_recipe=True)
+
 
 def recipe_new(request):
     if request.method == "POST":
         recipe_id = DBUtils.create_new_recipe(request)
         message = "Thanks, new recipe added"
-        context = {'success': message, 'id':recipe_id}
+        context = {'success': message, 'id': recipe_id}
         return render(request,
                       'html/recipe/recipe_edit.html',
                       context)
@@ -81,14 +100,15 @@ def recipe_new(request):
             recipeForm = RecipeForm()
 
             ingredientFormSet = formset_factory(IngredientForm, extra=1)
-            ingredientFormSet  = ingredientFormSet(prefix='ingredient')
+            ingredientFormSet = ingredientFormSet(prefix='ingredient')
 
             categoryFormSet = formset_factory(CategoryForm, extra=1)
             categoryFormSet = categoryFormSet(prefix='category')
 
             context = {
-                'recipe_formset': recipeForm, 'ingredient_formset': ingredientFormSet, 'category_formset': categoryFormSet,
-                'edit': False
+                'recipe_formset':   recipeForm, 'ingredient_formset': ingredientFormSet,
+                'category_formset': categoryFormSet,
+                'edit':             False
                 }
             return render(request,
                           'html/recipe/recipe_edit.html',
@@ -99,7 +119,7 @@ def recipe_new(request):
 
 
 def recipe_edit(request, recipe_id):
-    recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id,request.user.is_superuser)
+    recipecontext = DBUtils.get_recipe_details(recipe_id, request.user.id, request.user.is_superuser)
 
     if recipecontext == None or recipecontext['user_can_edit'] == False:
         return not_authorized()
@@ -113,7 +133,7 @@ def recipe_edit(request, recipe_id):
         DBUtils.hide_recipe(recipe_id)
         newID = DBUtils.create_new_recipe(request)
         message = "Thanks, your recipe was edited"
-        context = {'success': message, 'id':newID}
+        context = {'success': message, 'id': newID}
 
         return render(request,
                       'html/recipe/recipe_edit.html',
@@ -125,20 +145,22 @@ def recipe_edit(request, recipe_id):
         # fill recipe form.
         filled_recipe = RecipeForm(
                 initial={
-                    'name': recipe.name, 'description': recipe.description, 'cook_time': recipe.cook_time,
+                    'name':          recipe.name, 'description': recipe.description, 'cook_time': recipe.cook_time,
                     'person_amount': recipe.person_amount, 'public': public
                     })
 
         # fill ingredient forms.
         filled_ing = ingredientFormSet(
-                initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients],prefix='ingredient')
+                initial=[{'unit': x.unit, 'name': x.ing_ID, 'amount': x.amount} for x in ingredients],
+                prefix='ingredient')
 
         # fill category forms.
-        filled_categories = categoryFormSet(initial=[{'category': x.category_ID} for x in categories],prefix='category')
+        filled_categories = categoryFormSet(initial=[{'category': x.category_ID} for x in categories],
+                                            prefix='category')
 
         context = {
             'recipe_formset': filled_recipe, 'ingredient_formset': filled_ing, 'category_formset': filled_categories,
-            'edit': True
+            'edit':           True
             }
 
         return render(request,
