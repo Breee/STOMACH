@@ -17,28 +17,34 @@ from utils.CustomDjangoJSONEncoder import CustomDjangoJSONEncoder
 
 
 def recipes_list(request, message="", user_recipe=False):
+    """
+    view for the recipes list/search. 
+    :param request: 
+    :param message: 
+    :param user_recipe: 
+    :return: recipe_list.html rendered or just a json-response.
+    """
+    # A get request looks as follows usually:
+    # "GET /recipes/?q=flour&initialized=1&filter=60 HTTP/1.1"
     query = request.GET.get('q') if request.GET.get('q') is not None else ''
     initialized = True if request.GET.get('initialized') == '1' else False
-    # filters are get requests
-    # there are two queries related to filters, ?filter=xxx and ?removefilter=xxx
-    # ?filter=xxx will apply a filter and ?removefilter=xxx will remove it.
     filters = request.GET.getlist('filter')
-    removed_filters = request.GET.getlist('removefilter')
-    # remove filters which have been deselected.
-    filters = [x for x in filters if x not in removed_filters]
+
     recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters,
                                                                     user_recipe)
-    # build a filter string to preserve applied filters.
-    filter_string = build_filter_string(selected_filters)
 
     context = {
         'latest_recipes_list': recipe_list, "message": message, 'filters': filter, 'selected_filters': selected_filters,
-        'filter_string':       filter_string, 'query': query
+        'query': query
         }
 
+    # We only want to render the site once, in order to have a fast and interactive search.
+    # the render function simply takes too much time and feels slow.
     if initialized:
+        # context to json
+        # 3 cases because Django, Haydtack and non-django-stuff is converted to json differently.
+        # TODO: this code could be at another place maybe, find out if this is really the best way.
         for key, value in context.items():
-            print("key: %s : value: %s" % (key, value))
             if isinstance(value, QuerySet):
                 context[key] = json.dumps(list(value), cls=CustomDjangoJSONEncoder, default=lambda o: o.__dict__,
                                           sort_keys=True, indent=4)
@@ -47,29 +53,12 @@ def recipes_list(request, message="", user_recipe=False):
                                           cls=CustomDjangoJSONEncoder)
             else:
                 context[key] = json.dumps(value, cls=CustomDjangoJSONEncoder)
+        # Simple json response, which can be processed easy at the frontend with JS.
         return JsonResponse(context)
     else:
         return render(request,
                       'html/recipe/recipe_list.html',
                       context)
-
-
-def build_filter_string(selected_filters):
-    """
-    Function that will build a string out of selected_filters in the form of a typical get
-    e.g selected filter ids may be 1,15.. the string produced is ?filter=1&filter=15
-    in the frontend these strings are appended to the href of the filters.
-    :param selected_filters: 
-    :return: 
-    """
-    filter_string = ''
-    for filter in selected_filters:
-        if filter_string == '':
-            filter_string += '?'
-        else:
-            filter_string += '&'
-        filter_string += 'filter=%s' % filter.id
-    return filter_string
 
 
 def recipe_detail(request, recipe_id):

@@ -2,14 +2,13 @@
  * Created by Bree on 20.05.2017.
  */
 
-// Whole-script strict mode syntax
-'use strict';
 var lastQuery = "";
 
 $(document).ready(function () {
     // prevents that arrays in get requests get encoded with brackets.
     jQuery.ajaxSettings.traditional = true;
 
+    // initialize dynamic formsets
     $('.ingredient-formset').formset({
         addText: '<button class="btn btn-info"><span class="glyphicon glyphicon-plus"></span> Add ingredient</button>',
         deleteText: '<span class="btn btn-info btn-xs"><span class="glyphicon glyphicon-trash"></span> Remove</span>',
@@ -22,23 +21,28 @@ $(document).ready(function () {
         prefix: 'category'
     });
 
+    // On the fly search with a delay of 200 ms.
     $('#searchbar').keyup(function (evt) {
         delay(function () {
-            getRecipesAndFilters();
+            getRecipesAndFilters(false);
         }, 200);
     });
 
+
+    // If a filter is clicked, get the recipes and update filters.
     $(document).on('click', '.recipefilter', function (evt) {
         if ($(this).hasClass("selected-filter")) {
             $(this).removeClass("selected-filter");
         } else {
             $(this).addClass("selected-filter");
         }
-        getRecipesAndFilters();
+        getRecipesAndFilters(true);
     });
 
 });
 
+
+// simple delay function.
 var delay = (function () {
     var timer = 0;
     return function (callback, ms) {
@@ -47,22 +51,29 @@ var delay = (function () {
     };
 })();
 
-function getRecipesAndFilters() {
+// function that sends a get request to the server, in order to retrieve recipes.
+function getRecipesAndFilters(filterClicked) {
     var query = $('#searchbar').val().trim();
-    // compare trimmed queries because such that "flour" and "  flour    " is equal.
-    if (lastQuery != query) {
+    // compare trimmed queries because such that "flour" and "  flour    " is equal
+    // if you click a filter we don't have to care about the query.
+    if (lastQuery != query || filterClicked) {
         lastQuery = query;
+        // q is the search query,
+        // initialized is used to tell the view that it does not have to render the page again.
+        // filter is an array of selected filters.
         $.get('/recipes/', {
             'q': query,
             'initialized': 1,
             'filter': getSelectedFilters()
         }, function (data) {
+            // if the get was successful, update the filtets and recipes.
             prepareRecipeList(data.latest_recipes_list);
             prepareFilters(data.filters, data.selected_filters);
         });
     }
 }
 
+// function that fetches all filters with the 'selected-filter' class.
 function getSelectedFilters() {
     var filterIDs = $.map($(".selected-filter"), function (n, i) {
         return n.id;
@@ -70,6 +81,7 @@ function getSelectedFilters() {
     return filterIDs;
 }
 
+// function to build the recipes list from the results of our get request.
 function prepareRecipeList(recipe_list) {
     var recipe_html = "";
     $.each(JSON.parse(recipe_list), function (i, el) {
@@ -83,8 +95,9 @@ function prepareRecipeList(recipe_list) {
     }
 }
 
-function prepareFilters(filters, selected_filters) {
 
+// function to build the filters from the results of our get request.
+function prepareFilters(filters, selected_filters) {
     var filters_html = "";
 
     $.each(JSON.parse(selected_filters), function (i, el) {
@@ -112,6 +125,10 @@ function prepareFilters(filters, selected_filters) {
 
     $(".filters-content").empty().append(filters_html);
 }
+
+
+// function that checks if all inputfields in an ingredient-formset are filled.
+// can be done with django somehow (see issues).
 function validateIngredientForm() {
     var noErrors = true;
     var inputs = $('.ingredient-formset :input');
@@ -124,5 +141,3 @@ function validateIngredientForm() {
     });
     return noErrors;
 }
-
-

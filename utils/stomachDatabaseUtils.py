@@ -1,7 +1,6 @@
 from django.shortcuts import *
 import utils.postDataProcessor as PostProcessor
 from recipe.initial_data.InitialValueManager import InitialValueManager
-from recipe.models import *
 from recipe.forms import *
 from storage.models import *
 from django.db.models import Count
@@ -21,25 +20,21 @@ def get_recipe_details(recipe_id, user_id, is_superuser):
         recipe = get_object_or_404(Recipe, pk=recipe_id)
     else:
         recipe = get_object_or_404(Recipe, pk=recipe_id, visible=True)
-
     ingredients = Ing_Recipe.objects.all().filter(recipe_ID=recipe_id)
     tags = Tag_Recipe.objects.all().filter(recipe_ID=recipe_id)
     categories = Category_Recipe.objects.all().filter(recipe_ID=recipe_id)
-
     # check if user is the creator or admin of the recipe in order to enable an edit function.
-    if is_superuser:
-        user_can_edit = True
-    else:
+    # Superusers can do whatever they want, whenever they want.
+    if not is_superuser:
+        # no 404 -> user is creator and can edit.
         get_object_or_404(Creator_Recipe, recipe_ID=recipe_id, creator_ID=user_id)
-        user_can_edit = True
-
+    user_can_edit = True
     recipe_is_public = get_object_or_404(Creator_Recipe, recipe_ID=recipe_id).public
-
     if user_can_edit or (not user_can_edit and recipe_is_public):
         context = {
             'recipe':        recipe, 'ingredients': ingredients, 'tags': tags, 'categories': categories,
             'user_can_edit': user_can_edit, 'recipe_is_public': recipe_is_public
-            }
+        }
     else:
         context = None
     return context
@@ -64,8 +59,12 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     :param user_recipe: boolean if you want to fetch user-only recipes
     :return: queryset of recipes, queryset of available filters, queryset of selected filters
     """
+    # Haystack Searchform takes the field "q" from the get request.
     form = RecipeSearchForm(request.GET)
     recipes = form.search()
+    # facet counts
+    # TODO: is it really that terrible solved!?
+    facet_counts = recipes.facet('categories').facet_counts()['fields']['categories']
     # superusers can see all recipes
     # TODO: not sure if you want to see all recipes, as you could already see them in the admin panel.
     if request.user.is_superuser:
@@ -75,7 +74,6 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
         public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)
         # get all user recipes
         user_recipes = get_user_recipes(request).values_list('id')
-
         # differ between user and public recipes view
         if user_recipe:
             recipe_list = recipes.filter(rec_id__in=user_recipes, visible=True).order_by('published_date')
@@ -83,10 +81,10 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
             # union public and user recipes
             public_user = public_recipes.union(user_recipes)
             recipe_list = recipes.filter(rec_id__in=public_user, visible=True).order_by('published_date')
-
+    # TODO: (Bree) Use haystack's search facets for the filters.
+    # TODO: They are calculated anyway by haystack, so we do not have to fetch them on our own.
     # initialize selected filters to prevent errors.
     selected_filters = Category.objects.none()
-
     # the active filters are a list of category ids,
     if active_filters is not None:
         # filter category_recipe objects by active filters.
@@ -100,7 +98,6 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
         selected_filters = Category.objects.filter(pk__in=active_filters)
     else:
         active_filters = Category.objects.none()
-
     # filters are determined as follows, we filter by the recipes in the recipe_list, we exclude active filters to
     # prevent duplicates,
     # we annotate the queryset with a value count, which equals the amount of appearences of a category_id.
@@ -241,7 +238,6 @@ def get_storage_details(storage_id, user_id, is_superuser):
         storage = get_object_or_404(Storage, pk=storage_id, user_ID=user_id, visible=True)
 
     ingredients = Storage_Ingredient.objects.all().filter(storage_ID=storage_id)
-
     context = {
         'storage': storage, 'ingredients': ingredients,
         }
@@ -252,15 +248,13 @@ def get_storage_details(storage_id, user_id, is_superuser):
 """
 INIT STUFF
 """
-
-
+# TODO: should be in an extra python script. (some kind of installation thing)
 def create_units_from_csv():
     delete_all_units()
     im = InitialValueManager()
     im.read_unit_csv('recipe/initial_data/units_EN_US.csv', 'EN_US')
     for unit in im.get_unit_dict().values():
         create_unit(unit.get_name(), unit.get_short(), unit.get_language())
-
 
 def create_categories_from_csv():
     delete_all_categories()
