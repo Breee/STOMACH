@@ -85,26 +85,22 @@ def recipe_new(request):
                       'html/recipe/recipe_edit.html',
                       context)
     else:
-        if request.user.is_authenticated:
-            recipeForm = RecipeForm()
+        recipeForm = RecipeForm()
 
-            ingredientFormSet = formset_factory(IngredientForm, extra=1)
-            ingredientFormSet = ingredientFormSet(prefix='ingredient')
+        ingredientFormSet = formset_factory(IngredientForm, extra=1)
+        ingredientFormSet = ingredientFormSet(prefix='ingredient')
 
-            categoryFormSet = formset_factory(CategoryForm, extra=1)
-            categoryFormSet = categoryFormSet(prefix='category')
+        categoryFormSet = formset_factory(CategoryForm, extra=1)
+        categoryFormSet = categoryFormSet(prefix='category')
 
-            context = {
+        context = {
                 'recipe_formset':   recipeForm, 'ingredient_formset': ingredientFormSet,
                 'category_formset': categoryFormSet,
                 'edit':             False
                 }
-            return render(request,
+        return render(request,
                           'html/recipe/recipe_edit.html',
                           context)
-        else:
-            message = "Only logged in users can create new recipes."
-            return recipes_list(request, message)
 
 
 def recipe_edit(request, recipe_id):

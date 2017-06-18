@@ -54,7 +54,7 @@ def clean_post_data(request):
     ingredients = dict()
     categories = set()
     # regex matcher with 2 groups, where (\d+) is an ID and (.*) a field name.
-    # e.g. a match on form-1-name would deliver the groups 1,name.
+    # e.g. a match on ingredient-1-name would deliver the groups 1,name.
     matcher = re.compile(r'(?:category|ingredient)-(\d+)-(.*)')
     for key,value in dataDict.items():
         if key == 'name':
@@ -76,7 +76,7 @@ def clean_post_data(request):
             name = matches[0][1]
             if name == '':
                 continue
-            if name == 'category':
+            elif name == 'category':
                 categories.add(value[0])
             else:
                 if ID not in ingredients:

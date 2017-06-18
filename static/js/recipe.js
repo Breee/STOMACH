@@ -85,7 +85,7 @@ function getSelectedFilters() {
 function prepareRecipeList(recipe_list) {
     var recipe_html = "";
     $.each(JSON.parse(recipe_list), function (i, el) {
-        var elem = '<li><a href="/recipes/' + el.rec_id + '">' + el.name + '(Published: ' + el.published_date + ')</a></li>';
+        var elem = '<li><a href="/recipes/' + el.rec_id + '/">' + el.name + ' (Published: ' + el.published_date + ')</a></li>';
         recipe_html += elem;
     });
     if (recipe_html) {

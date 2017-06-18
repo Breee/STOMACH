@@ -62,25 +62,18 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     # Haystack Searchform takes the field "q" from the get request.
     form = RecipeSearchForm(request.GET)
     recipes = form.search()
-    # facet counts
-    # TODO: is it really that terrible solved!?
-    facet_counts = recipes.facet('categories').facet_counts()['fields']['categories']
-    # superusers can see all recipes
-    # TODO: not sure if you want to see all recipes, as you could already see them in the admin panel.
-    if request.user.is_superuser:
-        recipe_list = recipes.order_by('published_date')
+
+    # get all public recipes
+    public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)
+    # get all user recipes
+    user_recipes = recipes.filter(creator=request.user.id).values_list('rec_id', flat=True)
+    # differ between user and public recipes view
+    if user_recipe:
+        recipe_list = recipes.filter(rec_id__in=user_recipes, visible=True).order_by('published_date')
     else:
-        # get all public recipes
-        public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)
-        # get all user recipes
-        user_recipes = get_user_recipes(request).values_list('id')
-        # differ between user and public recipes view
-        if user_recipe:
-            recipe_list = recipes.filter(rec_id__in=user_recipes, visible=True).order_by('published_date')
-        else:
-            # union public and user recipes
-            public_user = public_recipes.union(user_recipes)
-            recipe_list = recipes.filter(rec_id__in=public_user, visible=True).order_by('published_date')
+        # union public and user recipes
+        public_user = public_recipes | user_recipes
+        recipe_list = recipes.filter(rec_id__in=public_user | user_recipes, visible=True).order_by('published_date')
     # TODO: (Bree) Use haystack's search facets for the filters.
     # TODO: They are calculated anyway by haystack, so we do not have to fetch them on our own.
     # initialize selected filters to prevent errors.
@@ -105,7 +98,7 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     available_filters = Category_Recipe.objects.filter(recipe_ID__in=recipe_list.values_list('rec_id', flat=True)) \
         .exclude(category_ID__in=active_filters) \
         .values('category_ID', 'category_ID__name') \
-        .annotate(count=Count('category_ID'))
+        .annotate(count=Count('category_ID')).order_by('-count')
     return recipe_list, available_filters, selected_filters
 
 
@@ -131,8 +124,7 @@ def create_new_recipe(request):
 
     # create new ingredients + ing_recipe relations
     # also add a tag for each ingredient's name.
-    for ing_id, value in cleaned_data['ingredients'].items():
-        print(ing_id, value)
+    for value in cleaned_data['ingredients'].values():
         # ingredient name + unit + amount
         name = value['name']
         unit = value['unit']
