@@ -38,25 +38,7 @@ DATABASES = {
 }
 ```
 
-# Setup the Searchserver (Elasticsearch)
+# Setup the Search (Woosh)
 
-1. start the elasticsearch server located in ``` external/elasticsearch-1.7.5/bin ```.
-2. verfy that the search server is running by calling <a href="http://127.0.0.1:9200">127.0.0.1:9200</a> in your browser, 
-you will see something similar to the following: 
-```
-{
-  "status" : 200,
-  "name" : "Hag",
-  "cluster_name" : "elasticsearch",
-  "version" : {
-    "number" : "1.7.5",
-    "build_hash" : "00f95f4ffca6de89d68b7ccaf80d148f1f70e4d4",
-    "build_timestamp" : "2016-02-02T09:55:30Z",
-    "build_snapshot" : false,
-    "lucene_version" : "4.10.4"
-  },
-  "tagline" : "You Know, for Search"
-}
-``` 
-3. Build the index by calling ```manage.py rebuild_index ```
-4. the search should now be working
+1. Build the index by calling ```manage.py rebuild_index ```
+2. the search should now be working
