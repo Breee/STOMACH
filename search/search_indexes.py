@@ -4,10 +4,10 @@ from recipe.models import *
 
 
 class RecipeIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='name', null=True)
+    text = indexes.EdgeNgramField(document=True, use_template=True)
+    name = indexes.EdgeNgramField(model_attr='name', null=True)
     rec_id = indexes.IntegerField(model_attr='pk', null=True)
-    description = indexes.CharField(model_attr='description', null=True)
+    description = indexes.EdgeNgramField(model_attr='description', null=True)
     published_date = indexes.DateTimeField(model_attr='published_date', null=True)
     public = indexes.BooleanField(model_attr='recipe_creator__public', null=True)
     creator = indexes.BooleanField(model_attr='recipe_creator__creator_ID', null=True)

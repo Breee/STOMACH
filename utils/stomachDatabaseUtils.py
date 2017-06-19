@@ -62,6 +62,8 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     # Haystack Searchform takes the field "q" from the get request.
     form = RecipeSearchForm(request.GET)
     recipes = form.search()
+    for rec in recipes:
+        print(rec.text)
 
     # get all public recipes
     public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)

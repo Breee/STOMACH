@@ -2,12 +2,26 @@ from django import forms
 
 from .models import *
 
-from haystack.forms import FacetedSearchForm
+from haystack.forms import SearchForm
+from haystack.inputs import AutoQuery
 
-
-class RecipeSearchForm(FacetedSearchForm):
+class RecipeSearchForm(SearchForm):
     def no_query_found(self):
         return self.searchqueryset.all()
+
+    def search(self):
+        if not self.is_valid():
+            return self.no_query_found()
+
+        if not self.cleaned_data.get('q'):
+            return self.no_query_found()
+        print("QUERY: %s" %self.cleaned_data['q'])
+        sqs = self.searchqueryset.filter(content__contains=AutoQuery(self.cleaned_data['q']))
+
+        if self.load_all:
+            sqs = sqs.load_all()
+
+        return sqs
 
 
 class RecipeForm(forms.ModelForm):
