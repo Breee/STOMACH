@@ -2,3 +2,4 @@ Django>=1.11.1
 pip>=9.0.1
 django-haystack
 whoosh
+simplejson

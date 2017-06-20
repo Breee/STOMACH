@@ -62,8 +62,8 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     # Haystack Searchform takes the field "q" from the get request.
     form = RecipeSearchForm(request.GET)
     recipes = form.search()
-    for rec in recipes:
-        print(rec.text)
+    completions = form.autocomplete(request)
+
 
     # get all public recipes
     public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)
@@ -101,7 +101,7 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
         .exclude(category_ID__in=active_filters) \
         .values('category_ID', 'category_ID__name') \
         .annotate(count=Count('category_ID')).order_by('-count')
-    return recipe_list, available_filters, selected_filters
+    return recipe_list, available_filters, selected_filters, completions
 
 
 def create_new_recipe(request):

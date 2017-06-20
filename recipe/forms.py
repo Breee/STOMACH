@@ -4,6 +4,9 @@ from .models import *
 
 from haystack.forms import SearchForm
 from haystack.inputs import AutoQuery
+import simplejson as json
+from django.http import HttpResponse
+from haystack.query import SearchQuerySet
 
 class RecipeSearchForm(SearchForm):
     def no_query_found(self):
@@ -16,12 +19,21 @@ class RecipeSearchForm(SearchForm):
         if not self.cleaned_data.get('q'):
             return self.no_query_found()
         print("QUERY: %s" %self.cleaned_data['q'])
-        sqs = self.searchqueryset.filter(content__contains=AutoQuery(self.cleaned_data['q']))
+        sqs = self.searchqueryset.filter(content__fuzzy=AutoQuery(self.cleaned_data['q']))
 
         if self.load_all:
             sqs = sqs.load_all()
 
         return sqs
+
+    def autocomplete(self,request):
+        q = request.GET.get('q', '')
+        if q:
+           sqs = self.searchqueryset.autocomplete(text=q)[:5]
+           suggestions = [result.name for result in sqs]
+        else:
+            return dict()
+        return suggestions
 
 
 class RecipeForm(forms.ModelForm):

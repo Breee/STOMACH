@@ -47,8 +47,10 @@
             <h2>Recipes:</h2>
             <hr>
             <form type="get" action="." id="searchform">
-                <input id="searchbar" type="text" name="q" value="{{ query }}">
-                <button type="submit">Search</button>
+                <div class="ui-widget">
+                    <input placeholder="Search for... " id="searchbar" name="q" value="{{ query }} ">
+                       <button class="btn btn-default" type="submit">Go!</button>
+                </div><!-- /input-group -->
             </form>
             <hr>
             {% if latest_recipes_list %}

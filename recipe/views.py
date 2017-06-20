@@ -30,12 +30,12 @@ def recipes_list(request, message="", user_recipe=False):
     initialized = True if request.GET.get('initialized') == '1' else False
     filters = request.GET.getlist('filter')
 
-    recipe_list, filter, selected_filters = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters,
+    recipe_list, filter, selected_filters,completions = DBUtils.get_recipe_list(request, None if len(filters) == 0 else filters,
                                                                     user_recipe)
 
     context = {
         'latest_recipes_list': recipe_list, "message": message, 'filters': filter, 'selected_filters': selected_filters,
-        'query': query
+        'query': query, 'completions':completions
         }
 
     # We only want to render the site once, in order to have a fast and interactive search.

@@ -24,7 +24,7 @@ $(document).ready(function () {
     // On the fly search with a delay of 200 ms.
     $('#searchbar').keyup(function (evt) {
         delay(function () {
-            getRecipesAndFilters(false);
+            getRecipesAndFilters(false,true);
         }, 200);
     });
 
@@ -36,7 +36,7 @@ $(document).ready(function () {
         } else {
             $(this).addClass("selected-filter");
         }
-        getRecipesAndFilters(true);
+        getRecipesAndFilters(true,false);
     });
 
 });
@@ -52,7 +52,7 @@ var delay = (function () {
 })();
 
 // function that sends a get request to the server, in order to retrieve recipes.
-function getRecipesAndFilters(filterClicked) {
+function getRecipesAndFilters(filterClicked,searchbar) {
     var query = $('#searchbar').val().trim();
     // compare trimmed queries because such that "flour" and "  flour    " is equal
     // if you click a filter we don't have to care about the query.
@@ -69,6 +69,9 @@ function getRecipesAndFilters(filterClicked) {
             // if the get was successful, update the filtets and recipes.
             prepareRecipeList(data.latest_recipes_list);
             prepareFilters(data.filters, data.selected_filters);
+            if(searchbar){
+                prepareCompletions(data.completions);
+            }
         });
     }
 }
@@ -126,6 +129,21 @@ function prepareFilters(filters, selected_filters) {
     $(".filters-content").empty().append(filters_html);
 }
 
+function prepareCompletions(completions) {
+    /*completions_html = "<ul>";
+    console.log(completions);
+    $.each(JSON.parse(completions), function (i, el) {
+        completions_html = completions_html.concat("<li class=\"completion\">").concat(el).concat("</li>");
+    });
+    completions_html.concat("</ul>");
+    $(".completions").empty().append(completions_html);
+    */
+    if(completions) {
+        var comp = JSON.parse(completions);
+        console.log(comp);
+        $("#searchbar").autocomplete({source:comp});
+    }
+}
 
 // function that checks if all inputfields in an ingredient-formset are filled.
 // can be done with django somehow (see issues).
@@ -141,3 +159,4 @@ function validateIngredientForm() {
     });
     return noErrors;
 }
+

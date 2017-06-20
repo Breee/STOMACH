@@ -29,6 +29,8 @@
 
     {% block head_css %}
         {% block head_css_site %}
+            <link href="{% static 'jquery-ui-1.12.1.autocomplete/jquery-ui.min.css' %}"
+                  rel="stylesheet" media="screen">
             <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.min.css' %}"
                   rel="stylesheet" media="screen">
             <link href="{% static 'bootstrap-3.3.7-dist/css/bootstrap-theme.min.css' %}"
@@ -109,6 +111,7 @@
 {% block footer_javascript %}
     {% block footer_javascript_site %}
         <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{% static 'jquery-ui-1.12.1.autocomplete/jquery-ui.min.js' %}"></script>
         <script src="{% static 'bootstrap-3.3.7-dist/js/bootstrap.min.js' %}"></script>
         <script src="{% static 'js/django-dynamic/src/jquery.formset.js' %}"></script>
         <script src="{% static 'js/recipe.js' %}"></script>
