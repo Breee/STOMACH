@@ -27,3 +27,14 @@ class RecipeIndex(indexes.SearchIndex, indexes.Indexable):
 
     def get_model(self):
         return Recipe
+
+class IngredientIndex(indexes.SearchIndex, indexes.Indexable):
+
+    text = indexes.EdgeNgramField(document=True, use_template=True)
+    name = indexes.EdgeNgramField(model_attr='name', null=True)
+
+    def get_updated_field(self):
+        return "updated_at"
+
+    def get_model(self):
+        return Ingredient

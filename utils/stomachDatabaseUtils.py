@@ -64,7 +64,6 @@ def get_recipe_list(request, active_filters=None, user_recipe=False):
     recipes = form.search()
     completions = form.autocomplete(request)
 
-
     # get all public recipes
     public_recipes = recipes.filter(public=True).values_list('rec_id', flat=True)
     # get all user recipes

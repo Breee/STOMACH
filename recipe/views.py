@@ -38,6 +38,8 @@ def recipes_list(request, message="", user_recipe=False):
         'query': query, 'completions':completions
         }
 
+    print(recipe_list)
+
     # We only want to render the site once, in order to have a fast and interactive search.
     # the render function simply takes too much time and feels slow.
     if initialized:

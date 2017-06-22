@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from haystack.query import SearchQuerySet
 
 class RecipeSearchForm(SearchForm):
+
     def no_query_found(self):
         return self.searchqueryset.all()
 
@@ -19,7 +20,7 @@ class RecipeSearchForm(SearchForm):
         if not self.cleaned_data.get('q'):
             return self.no_query_found()
         print("QUERY: %s" %self.cleaned_data['q'])
-        sqs = self.searchqueryset.filter(content__fuzzy=AutoQuery(self.cleaned_data['q']))
+        sqs = self.searchqueryset.filter(text=AutoQuery(self.cleaned_data['q']))
 
         if self.load_all:
             sqs = sqs.load_all()
@@ -29,10 +30,13 @@ class RecipeSearchForm(SearchForm):
     def autocomplete(self,request):
         q = request.GET.get('q', '')
         if q:
-           sqs = self.searchqueryset.autocomplete(text=q)[:5]
-           suggestions = [result.name for result in sqs]
+            sqs = self.searchqueryset.autocomplete(text=q)[:5]
+            suggestions = []
+            for x in sqs:
+                suggestions.append({'label':x.name,'category': x.model.__name__})
         else:
-            return dict()
+            return []
+        print(suggestions)
         return suggestions
 
 

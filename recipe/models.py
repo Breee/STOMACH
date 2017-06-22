@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+
 """
 #####################################################################
 ######################## RECIPE SECTION ############################
@@ -18,7 +19,6 @@ class Unit(models.Model):
     def __str__(self):
         return self.name + "(%s)" % self.short
 
-
 # class for categories like breakfast, lunch, dinner...
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -27,14 +27,12 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-
 # class for tags which shall be attached to recipes_list, e.g. flour, oven..
 class Tag(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
-
 
 # class for recipes_list
 class Recipe(models.Model):
@@ -60,14 +58,13 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name + " (ID: %d)" % self.id
 
-
 # class for defines an ingredient
 class Ingredient(models.Model):
     name = models.CharField(max_length=200)
+    updated_at = models.DateTimeField(auto_now=True, )
 
     def __str__(self):
         return self.name
-
 
 # class that defines a mapping [ingredient] -> [recipe]
 class Ing_Recipe(models.Model):
@@ -82,7 +79,6 @@ class Ing_Recipe(models.Model):
 
     def __str__(self):
         return "%s(%d) -> %s(%d)" % (self.recipe_ID.name, self.recipe_ID.id, self.ing_ID.name, self.ing_ID.id)
-
 
 # class that defines a mapping [category] -> [recipe]
 class Category_Recipe(models.Model):
@@ -113,3 +109,13 @@ class Recipe_Versions(models.Model):
     parent_ID = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='parent_recipe')
     recipe_ID = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='child_recipe')
     version = models.PositiveIntegerField(default=0)
+
+
+
+
+
+
+
+
+
+

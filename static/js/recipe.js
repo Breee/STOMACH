@@ -21,6 +21,28 @@ $(document).ready(function () {
         prefix: 'category'
     });
 
+        $.widget( "custom.catcomplete", $.ui.autocomplete, {
+      _create: function() {
+        this._super();
+        this.widget().menu( "option", "items", "> :not(.ui-autocomplete-category)" );
+      },
+      _renderMenu: function( ul, items ) {
+        var that = this,
+          currentCategory = "";
+        $.each( items, function( index, item ) {
+          var li;
+          if ( item.category != currentCategory ) {
+            ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+            currentCategory = item.category;
+          }
+          li = that._renderItemData( ul, item );
+          if ( item.category ) {
+            li.attr( "aria-label", item.category + " : " + item.label );
+          }
+        });
+      }
+    });
+
     // On the fly search with a delay of 200 ms.
     $('#searchbar').keyup(function (evt) {
         delay(function () {
@@ -52,7 +74,7 @@ var delay = (function () {
 })();
 
 // function that sends a get request to the server, in order to retrieve recipes.
-function getRecipesAndFilters(filterClicked,searchbar) {
+function getRecipesAndFilters(filterClicked, searchbar) {
     var query = $('#searchbar').val().trim();
     // compare trimmed queries because such that "flour" and "  flour    " is equal
     // if you click a filter we don't have to care about the query.
@@ -139,9 +161,12 @@ function prepareCompletions(completions) {
     $(".completions").empty().append(completions_html);
     */
     if(completions) {
-        var comp = JSON.parse(completions);
-        console.log(comp);
-        $("#searchbar").autocomplete({source:comp});
+        var data = JSON.parse(completions);
+        console.log(data);
+            $( "#searchbar" ).catcomplete({
+                delay: 0,
+                source: data
+            });
     }
 }
 
