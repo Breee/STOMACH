@@ -73,7 +73,7 @@ def clean_post_data(request):
         elif matcher.match(key):
             matches = matcher.findall(key)
             ID = matches[0][0]
-            name = matches[0][1]
+            name = matches[0][1].lower()
             if name == '':
                 continue
             elif name == 'category':

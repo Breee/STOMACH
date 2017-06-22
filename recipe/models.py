@@ -111,6 +111,13 @@ class Recipe_Versions(models.Model):
     version = models.PositiveIntegerField(default=0)
 
 
+# trigger reindex on save.
+from search.search_indexes import RecipeIndex
+
+def reindex_Recipe(sender, **kwargs):
+    RecipeIndex().update_object(kwargs['instance'])
+
+models.signals.post_save.connect(reindex_Recipe, sender=Recipe)
 
 
 

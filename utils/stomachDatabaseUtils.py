@@ -150,7 +150,7 @@ def create_new_recipe(request):
     # create category_Recipe relation
     for cat_id in cleaned_data['categories']:
         Category_Recipe.objects.create(recipe_ID_id=new_recipe.id, category_ID_id=cat_id)
-
+    new_recipe.save()
     return new_recipe.id
 
 

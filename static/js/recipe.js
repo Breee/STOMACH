@@ -31,9 +31,10 @@ $(document).ready(function () {
           currentCategory = "";
         $.each( items, function( index, item ) {
           var li;
-          if ( item.category != currentCategory ) {
-            ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
-            currentCategory = item.category;
+            console.log(item);
+            if ( item.category != currentCategory ) {
+              ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+              currentCategory = item.category;
           }
           li = that._renderItemData( ul, item );
           if ( item.category ) {
@@ -162,12 +163,14 @@ function prepareCompletions(completions) {
     */
     if(completions) {
         var data = JSON.parse(completions);
+        var searchbar = $( "#searchbar" );
         console.log(data);
-            $( "#searchbar" ).catcomplete({
+            searchbar.catcomplete({
                 delay: 0,
                 minLength: 0,
                 source: data
             });
+        searchbar.catcomplete("search",'');
     }
 }
 

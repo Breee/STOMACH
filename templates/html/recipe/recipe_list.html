@@ -46,12 +46,12 @@
         <div class="col-sm-10 text-left">
             <h2>Recipes:</h2>
             <hr>
-            <form type="get" action="." id="searchform">
-                <div class="ui-widget">
-                    <input placeholder="Search for... " id="searchbar" name="q" value="{{ query }}" autocomplete="off">
-                       <button class="btn btn-default" type="submit">Go!</button>
+            <form type="get" action="." id="searchform" class="text-center">
+                <div class="input-group ">
+                    <input class="form-control" placeholder="Search for... " id="searchbar" name="q" value="{{ query }}" autocomplete="off">
                 </div><!-- /input-group -->
             </form>
+
             <hr>
             {% if latest_recipes_list %}
                 <ul id="recipe-list">
