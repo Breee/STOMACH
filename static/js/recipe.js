@@ -165,6 +165,7 @@ function prepareCompletions(completions) {
         console.log(data);
             $( "#searchbar" ).catcomplete({
                 delay: 0,
+                minLength: 0,
                 source: data
             });
     }

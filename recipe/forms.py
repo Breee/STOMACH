@@ -30,7 +30,7 @@ class RecipeSearchForm(SearchForm):
     def autocomplete(self,request):
         q = request.GET.get('q', '')
         if q:
-            sqs = self.searchqueryset.autocomplete(text=q)[:5]
+            sqs = self.searchqueryset.autocomplete(text=q)[:10]
             suggestions = []
             for x in sqs:
                 suggestions.append({'label':x.name,'category': x.model.__name__})
