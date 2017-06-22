@@ -2,10 +2,11 @@
 \.idea/
 
 STOMACH/__pycache__/
-
+STOMACH/whoosh_index/*
 stomach_src/__pycache__/
 
 stomach_src/migrations/__pycache__/
+
 
 *.sqlite3
 
@@ -15,5 +16,4 @@ virtual_env/
 *.cfs
 *.si
 *.lock
-external/elasticsearch-1.7.5/data/
-external/elasticsearch-1.7.5/logs/
+
