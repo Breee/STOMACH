@@ -71,24 +71,24 @@ class Ing_Recipe(models.Model):
     # recipe id
     recipe_ID = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_ingredient')
     # ingredient id
-    ing_ID = models.ForeignKey(Ingredient, related_name='ingredient_relation')
+    ing_ID = models.ForeignKey(Ingredient,on_delete=models.DO_NOTHING, related_name='ingredient_relation')
     # amount of the ingredient
     amount = models.PositiveIntegerField(default=1)
     # unit of the ingredient
-    unit = models.ForeignKey(Unit)
+    unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s(%d) -> %s(%d)" % (self.recipe_ID.name, self.recipe_ID.id, self.ing_ID.name, self.ing_ID.id)
 
 # class that defines a mapping [category] -> [recipe]
 class Category_Recipe(models.Model):
-    category_ID = models.ForeignKey(Category)
+    category_ID = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
     recipe_ID = models.ForeignKey(Recipe, on_delete=models.CASCADE, related_name='recipe_category')
 
 
 # class that defines a mapping [tag] -> [recipe]
 class Tag_Recipe(models.Model):
-    tag_ID = models.ForeignKey(Tag)
+    tag_ID = models.ForeignKey(Tag, on_delete=models.DO_NOTHING)
     recipe_ID = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 
 

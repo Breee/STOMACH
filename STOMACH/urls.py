@@ -4,11 +4,8 @@ from django.contrib.auth import views as auth_views
 import recipe.views
 
 urlpatterns = [
-    url(r'^login/', auth_views.login,
-        {'template_name': 'html/registration/login.html'}, name='login'),
-    url(r'^logout/', auth_views.logout,
-        {'next_page': '/recipes'},
-        name='logout'),
+    url(r'^login/', auth_views.LoginView.as_view(template_name= 'html/registration/login.html'), name='login'),
+    url(r'^logout/', auth_views.LogoutView.as_view(next_page = '/recipes'), name='logout'),
     url(r'^signup/', include('signup.urls')),
     url(r'^recipes/', include('recipe.urls')),
     url(r'^storage/', include('storage.urls')),
